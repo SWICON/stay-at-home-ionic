@@ -3,6 +3,8 @@ import * as moment from 'moment';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 import { Platform } from '@ionic/angular';
 
+declare var ol: any;
+
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
@@ -45,6 +47,7 @@ export class Tab3Page implements OnInit {
     });
 
     this.geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
       timeout: 30000
     })
       .then((position: Geoposition) => {
@@ -60,6 +63,5 @@ export class Tab3Page implements OnInit {
     const view = this.map.getView();
     view.setCenter(ol.proj.fromLonLat([longitude, latitude]));
     view.setZoom(8);
-    console.log(this._currentPosition);
   }
 }
