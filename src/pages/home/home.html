@@ -5,13 +5,17 @@
 </ion-header>
 
 <ion-content padding>
-  <h2>Welcome to Ionic!</h2>
-  <p>
-    This starter project comes with simple tabs-based layout for apps
-    that are going to primarily use a Tabbed UI.
-  </p>
-  <p>
-    Take a look at the <code>src/pages/</code> directory to add or change tabs,
-    update any existing page or create new pages.
-  </p>
+  <!-- show if user logged in -->
+  <div *ngIf="isUserLoggedIn">
+    <ion-list>
+      <ion-item>
+        <ion-label>Email: {{userData.email}}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Email Verified: {{userData.emailVerified}}</ion-label>
+      </ion-item>
+    </ion-list>
+    <button ion-button clear small block (click)="logout()">logout</button>
+  </div>
+  <button *ngIf="!isUserLoggedIn" ion-button block (click)="doGoogleLogin()">Login with Google +</button>
 </ion-content>
