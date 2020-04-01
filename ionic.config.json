@@ -1,0 +1,7 @@
+{
+  "name": "stay-at-home",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
