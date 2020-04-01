@@ -1,46 +1,29 @@
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
-import { GooglePlus } from '@ionic-native/google-plus/ngx';
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
+import { RouteReuseStrategy } from '@angular/router';
+
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
-import { MyApp } from './app.component';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
 
-import { HomePage } from '../pages/home/home';
-import { SettingsPage } from '../pages/settings/settings';
-import { RankingPage } from '../pages/ranking/ranking';
-import { TabsPage } from '../pages/tabs/tabs';
-
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 
 @NgModule({
-  declarations: [
-    MyApp,
-    SettingsPage,
-    RankingPage,
-    HomePage,
-    TabsPage
-  ],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot(MyApp)
-  ],
-  bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp,
-    SettingsPage,
-    RankingPage,
-    HomePage,
-    TabsPage
-  ],
+  declarations: [AppComponent],
+  entryComponents: [],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
   providers: [
     StatusBar,
     SplashScreen,
     GooglePlus,
     Geolocation,
     LocationAccuracy,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
-  ]
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+  ],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
