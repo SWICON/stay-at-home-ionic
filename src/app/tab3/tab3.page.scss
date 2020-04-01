@@ -1,3 +1,18 @@
 ion-content ion-toolbar {
   --background: translucent;
 }
+
+.full-grid {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .full-col {
+    display: flex;
+    flex: 1;
+
+    .map {      
+      flex: 1;
+    }
+  }
+}
