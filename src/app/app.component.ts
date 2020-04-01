@@ -1,18 +1,27 @@
 import { Component } from '@angular/core';
-import { Platform } from 'ionic-angular';
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import * as firebase from 'firebase/app';
 
-import { TabsPage } from '../pages/tabs/tabs';
+import { Platform } from '@ionic/angular';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+import * as firebase from 'firebase/app';
+import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 
 @Component({
-  templateUrl: 'app.html'
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
+  styleUrls: ['app.component.scss']
 })
-export class MyApp {
-  rootPage: any = TabsPage;
+export class AppComponent {
+  constructor(
+    private platform: Platform,
+    private splashScreen: SplashScreen,
+    private statusBar: StatusBar,
+    private locationAccuracy: LocationAccuracy
+  ) {
+    this.initializeApp();
+  }
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen) {
+  initializeApp() {
     firebase.initializeApp({
       apiKey: 'AIzaSyBxLqlT6KgQWSSxYlXijZcHKwcjJj76XSE',
       authDomain: 'stay-at-home-ionic.firebaseapp.com',
@@ -21,11 +30,21 @@ export class MyApp {
       storageBucket: 'stay-at-home-ionic.appspot.com',
       messagingSenderId: '159351352235'
     });
-    platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      statusBar.styleDefault();
-      splashScreen.hide();
+    this.platform.ready().then(() => {
+      this.statusBar.styleDefault();
+      this.splashScreen.hide();
+
+      if (!this.platform.is('desktop')) {
+        this.locationAccuracy.canRequest().then((canRequest: boolean) => {
+          if (canRequest) {
+            // the accuracy option will be ignored by iOS
+            this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
+              () => console.log('Request successful'),
+              error => console.log('Error requesting location permissions', error)
+            );
+          }
+        });
+      }
     });
   }
 }
