@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, ToastController, Platform } from 'ionic-angular';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
-import firebase from 'firebase';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'page-home',
@@ -28,6 +28,7 @@ export class HomePage {
 
   logout() {
     firebase.auth().signOut();
+    this.isUserLoggedIn = false;
   }
 
   displayToast(message) {
