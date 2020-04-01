@@ -1,15 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import * as moment from 'moment';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 
-export function getToday() {
-  const today = new Date();
-  today.setHours(0);
-  today.setMinutes(0);
-  today.setSeconds(0);
-  today.setMilliseconds(0);
-  return today.toISOString();
-}
+declare var ol: any;
 
 @Component({
   selector: 'page-settings',
@@ -18,6 +12,9 @@ export function getToday() {
 export class SettingsPage implements OnInit {
 
   private _isolationBegin: string;
+  private _currentPosition: Geoposition;
+
+  map: any;
 
   homeIsCorrect: boolean;
   get isolationBegin(): string {
@@ -29,7 +26,8 @@ export class SettingsPage implements OnInit {
     console.log(value);
   }
 
-  constructor(public navCtrl: NavController) { }
+  constructor(public navCtrl: NavController,
+    private geolocation: Geolocation) { }
 
   ngOnInit() {
     this.homeIsCorrect = false;
@@ -39,9 +37,33 @@ export class SettingsPage implements OnInit {
       second: 0,
       millisecond: 0
     }).toISOString();
+
+    this.map = new ol.Map({
+      target: 'map',
+      layers: [
+        new ol.layer.Tile({
+          source: new ol.source.OSM()
+        })
+      ]
+    });
+
+    this.geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 30000
+    })
+    .then((position: Geoposition) => {
+      console.log(position);
+      this._currentPosition = position;
+      this.setMapCenter(position.coords.longitude, position.coords.latitude);
+    }).catch((error) => {
+      console.log('Error getting location', error);
+    });
   }
 
-  updateDate(event) {
-    console.log(event);
+  setMapCenter(longitude, latitude) {
+    const view = this.map.getView();
+    view.setCenter(ol.proj.fromLonLat([longitude, latitude]));
+    view.setZoom(8);
+    console.log(this._currentPosition);
   }
 }
