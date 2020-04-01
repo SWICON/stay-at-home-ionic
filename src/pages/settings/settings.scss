@@ -1,3 +1,11 @@
 page-settings {
 
+  .scroll-content {
+    display: flex;
+    flex-direction: column;
+
+    .map {
+      flex: 1 0 auto;
+    }
+  }
 }
