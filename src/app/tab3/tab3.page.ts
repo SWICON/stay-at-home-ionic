@@ -16,6 +16,7 @@ const ACCES_TOKEN = 'pk.eyJ1IjoicGFua3k4MyIsImEiOiJjazhoaTkzNHMwMHZsM2VwY2RjZjlm
 })
 export class Tab3Page implements OnInit {
 
+    isDarkMode: boolean;
     map: L.Map;
     center: L.PointTuple;
     isHomeRecorded = false;
@@ -31,7 +32,6 @@ export class Tab3Page implements OnInit {
                 private geolocation: Geolocation,
                 public authService: AuthenticationService) {
         this.platform.ready().then(() => {
-
             this.geolocation.getCurrentPosition({
                 enableHighAccuracy: true,
                 timeout: 30000
@@ -43,6 +43,8 @@ export class Tab3Page implements OnInit {
                 console.log('Error getting location', error);
             });
         });
+
+        this.isDarkMode = JSON.parse(localStorage.getItem('isDarkMode') || 'false');
     }
 
     ngOnInit() {
@@ -88,8 +90,10 @@ export class Tab3Page implements OnInit {
         console.log('SAVE', this.userSettings);
     }
 
-    toggleDakTheme(event) {
-        document.body.classList.toggle('dark', event.detail.checked);
+
+    toggleDakTheme() {
+        localStorage.setItem('isDarkMode', JSON.stringify(this.isDarkMode));
+        document.body.classList.toggle('dark', this.isDarkMode);
     }
 
 }

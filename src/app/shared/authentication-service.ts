@@ -124,6 +124,8 @@ export class AuthenticationService {
     SignOut() {
         return this.ngFireAuth.auth.signOut().then(() => {
             localStorage.removeItem('user');
+            localStorage.removeItem('isDarkMode');
+            document.body.classList.toggle('dark', false);
             this.router.navigate(['login']);
         });
     }

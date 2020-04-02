@@ -53,7 +53,7 @@
           <ion-label>
             Toggle Dark Theme
           </ion-label>
-          <ion-toggle id="themeToggle" slot="end" (ionChange)="toggleDakTheme($event)"></ion-toggle>
+          <ion-toggle id="themeToggle" [(ngModel)]="isDarkMode" slot="end" (ionChange)="toggleDakTheme($event)"></ion-toggle>
         </ion-item>
       </ion-col>
     </ion-row>
