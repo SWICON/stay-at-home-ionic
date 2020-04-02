@@ -29,9 +29,14 @@
           </ion-item>
           <ion-item>
             <ion-label>Is this your Home?</ion-label>
-            <ion-toggle slot="end" [(ngModel)]="homeIsCorrect"></ion-toggle>
+            <ion-toggle slot="end" [(ngModel)]="homeIsCorrect" (ionChange)="onHomeRecordedChanged($event)"></ion-toggle>            
           </ion-item>
         </ion-list>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-note>Please go home and when your position is correct toggle the button</ion-note>
       </ion-col>
     </ion-row>
     <ion-row class="full-col">
