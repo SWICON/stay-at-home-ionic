@@ -5,6 +5,7 @@ import { Platform } from '@ionic/angular';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 import { UserSettings } from '../model/user-settings.interface';
+import {AuthenticationService} from '../shared/authentication-service';
 
 const ACCES_TOKEN = 'pk.eyJ1IjoicGFua3k4MyIsImEiOiJjazhoaTkzNHMwMHZsM2VwY2RjZjlmcW56In0.ur3AjrMaGbuAV_rYIfCCXg';
 
@@ -17,7 +18,7 @@ export class Tab3Page implements OnInit {
 
   map: L.Map;
   center: L.PointTuple;
-  isHomeRecorded: boolean = false;
+  isHomeRecorded = false;
   userSettings: UserSettings = {
     isolationStartedAt: null,
     homePosition: {
@@ -27,7 +28,8 @@ export class Tab3Page implements OnInit {
   };
 
   constructor(private platform: Platform,
-    private geolocation: Geolocation) {
+              private geolocation: Geolocation,
+              public authService: AuthenticationService) {
     this.platform.ready().then(() => {
 
       this.geolocation.getCurrentPosition({
@@ -40,7 +42,7 @@ export class Tab3Page implements OnInit {
         }).catch((error) => {
           console.log('Error getting location', error);
         });
-    })
+    });
   }
 
   ngOnInit() {
@@ -51,7 +53,7 @@ export class Tab3Page implements OnInit {
       second: 0,
       millisecond: 0
     }).toISOString();
-    
+
     this.saveUserSettings();
   }
 

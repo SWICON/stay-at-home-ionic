@@ -1,17 +1,17 @@
-<ion-content>
+<ion-content center text-center>
     <form>
-        <ion-row *ngIf="authService.isLoggedIn">
-            <ion-col>
-                <ion-button
-                        type="submit"
-                        color="warning"
-                        (click)="authService.SignOut()"
-                        expand="block">
-                    Log Out
-                </ion-button>
-            </ion-col>
-        </ion-row>
-        <ion-row *ngIf="!authService.isLoggedIn">
+<!--        <ion-row *ngIf="authService.isLoggedIn">-->
+<!--            <ion-col>-->
+<!--                <ion-button-->
+<!--                        type="submit"-->
+<!--                        color="warning"-->
+<!--                        (click)="authService.SignOut()"-->
+<!--                        expand="block">-->
+<!--                    Log Out-->
+<!--                </ion-button>-->
+<!--            </ion-col>-->
+<!--        </ion-row>-->
+        <ion-row *ngIf="!authService.isLoggedIn" center>
             <ion-col>
                 <ion-button
                         type="submit"
@@ -22,7 +22,7 @@
                 </ion-button>
             </ion-col>
         </ion-row>
-        <ion-row *ngIf="!authService.isLoggedIn">
+        <ion-row *ngIf="!authService.isLoggedIn" center>
             <ion-col>
                 <ion-button
                         type="submit"
