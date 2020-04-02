@@ -16,19 +16,14 @@ export class AppComponent {
         private splashScreen: SplashScreen,
         private statusBar: StatusBar,
         private locationAccuracy: LocationAccuracy) {
+
         // Use matchMedia to check the user preference
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-
         if (JSON.parse(localStorage.getItem('isDarkMode') || 'false')) {
-            toggleDarkTheme(true);
+            document.body.classList.toggle('dark', true);
         }
         // Listen for changes to the prefers-color-scheme media query
-        prefersDark.addListener((mediaQuery) => toggleDarkTheme(mediaQuery.matches));
-
-        // Add or remove the "dark" class based on if the media query matches
-        function toggleDarkTheme(shouldAdd) {
-            document.body.classList.toggle('dark', shouldAdd);
-        }
+        prefersDark.addListener((mediaQuery) =>  document.body.classList.toggle('dark', mediaQuery.matches));
 
         this.initializeApp();
     }
