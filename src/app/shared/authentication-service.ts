@@ -88,9 +88,16 @@ export class AuthenticationService {
     AuthLogin(provider) {
         return this.ngFireAuth.auth.signInWithPopup(provider)
             .then((result) => {
-                this.ngZone.run(() => {
-                    this.router.navigate(['/tabs']);
-                });
+                if (JSON.parse(localStorage.getItem(`${ result.user.uid}-firstStart`) || 'true')) {
+                    localStorage.setItem(`${ result.user.uid}-firstStart`, JSON.stringify(false));
+                    this.ngZone.run(() => {
+                        this.router.navigate(['/tabs/tab3']);
+                    });
+                } else {
+                    this.ngZone.run(() => {
+                        this.router.navigate(['/tabs']);
+                    });
+                }
                 // this.SetUserData(result.user);
             }).catch((error) => {
                 window.alert(error);
