@@ -1,0 +1,37 @@
+<ion-content>
+    <form>
+        <ion-row *ngIf="authService.isLoggedIn">
+            <ion-col>
+                <ion-button
+                        type="submit"
+                        color="warning"
+                        (click)="authService.SignOut()"
+                        expand="block">
+                    Log Out
+                </ion-button>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngIf="!authService.isLoggedIn">
+            <ion-col>
+                <ion-button
+                        type="submit"
+                        color="danger"
+                        (click)="authService.GoogleAuth()"
+                        expand="block">
+                    Login with Google
+                </ion-button>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngIf="!authService.isLoggedIn">
+            <ion-col>
+                <ion-button
+                        type="submit"
+                        color="primary"
+                        (click)="authService.FacebookAuth()"
+                        expand="block">
+                    Login with Facebook
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </form>
+</ion-content>
