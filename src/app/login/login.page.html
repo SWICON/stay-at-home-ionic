@@ -1,17 +1,18 @@
-<ion-content center text-center>
-    <form>
-<!--        <ion-row *ngIf="authService.isLoggedIn">-->
-<!--            <ion-col>-->
-<!--                <ion-button-->
-<!--                        type="submit"-->
-<!--                        color="warning"-->
-<!--                        (click)="authService.SignOut()"-->
-<!--                        expand="block">-->
-<!--                    Log Out-->
-<!--                </ion-button>-->
-<!--            </ion-col>-->
-<!--        </ion-row>-->
-        <ion-row *ngIf="!authService.isLoggedIn" center>
+<ion-header [translucent]="true" class="ion-padding" *ngIf="!authService.isLoggedIn">
+    <ion-toolbar>
+        <ion-title class="title-large ion-text-center">
+            Stay@Home App
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding ion-margin login-c" *ngIf="!authService.isLoggedIn">
+    <ion-grid class="ion-align-items-center">
+        <ion-row class="ion-align-items-center">
+            <ion-col>
+                <ion-title size="large"><ion-icon name="home"></ion-icon> Login to Stay@Home App</ion-title>
+            </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
             <ion-col>
                 <ion-button
                         type="submit"
@@ -22,7 +23,7 @@
                 </ion-button>
             </ion-col>
         </ion-row>
-        <ion-row *ngIf="!authService.isLoggedIn" center>
+        <ion-row class="ion-align-items-center">
             <ion-col>
                 <ion-button
                         type="submit"
@@ -33,5 +34,12 @@
                 </ion-button>
             </ion-col>
         </ion-row>
-    </form>
+    </ion-grid>
 </ion-content>
+<ion-footer *ngIf="!authService.isLoggedIn">
+    <ion-toolbar>
+        <ion-title class="ion-text-center" size="small">
+            Swision Hungary
+        </ion-title>
+    </ion-toolbar>
+</ion-footer>
