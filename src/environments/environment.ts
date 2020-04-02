@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebaseConfig: {
+    apiKey: 'AIzaSyBxLqlT6KgQWSSxYlXijZcHKwcjJj76XSE',
+    authDomain: 'stay-at-home-ionic.firebaseapp.com',
+    databaseURL: 'https://stay-at-home-ionic.firebaseio.com',
+    projectId: 'stay-at-home-ionic',
+    storageBucket: 'stay-at-home-ionic.appspot.com',
+    messagingSenderId: '159351352235'
+  }
 };
 
 /*
