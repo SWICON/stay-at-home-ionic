@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "159351352235",
+    "firebase_url": "https://stay-at-home-ionic.firebaseio.com",
+    "project_id": "stay-at-home-ionic",
+    "storage_bucket": "stay-at-home-ionic.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159351352235:android:d79fa2239a254ea14200ee",
+        "android_client_info": {
+          "package_name": "com.swision.stayathome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "159351352235-8fdq2rinktpnhmavs9m0brk2k7q7ua8c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.swision.stayathome",
+            "certificate_hash": "028cc1d772c6415b7de0523b2daca6df295cb6aa"
+          }
+        },
+        {
+          "client_id": "159351352235-p538gucdh12m45qfcd9aafkgankfkh2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAljPp_7vuKDCmyRtFHLAHnBeHIJqsN09I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "159351352235-p538gucdh12m45qfcd9aafkgankfkh2r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
