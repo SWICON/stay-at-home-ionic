@@ -1,58 +1,60 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import * as moment from 'moment';
+import { Component } from '@angular/core';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 import { Platform } from '@ionic/angular';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
-import { UserSettings } from '../model/user-settings.interface';
+import { UserSettings } from '../shared/user-settings.interface';
+import { AuthenticationService } from '../shared/authentication-service';
+import { UserSettingsService } from '../shared/user-settings.service';
+import { environment } from '../../environments/environment';
 
-const ACCES_TOKEN = 'pk.eyJ1IjoicGFua3k4MyIsImEiOiJjazhoaTkzNHMwMHZsM2VwY2RjZjlmcW56In0.ur3AjrMaGbuAV_rYIfCCXg';
+const ACCES_TOKEN = environment.leaflet.accessToken;
 
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss']
 })
-export class Tab3Page implements OnInit {
+export class Tab3Page {
+
+  private _isHomeRecorded: boolean = false;
 
   map: L.Map;
   center: L.PointTuple;
-  isHomeRecorded: boolean = false;
-  userSettings: UserSettings = {
-    isolationStartedAt: null,
-    homePosition: {
-      latitude: null,
-      longitude: null
-    }
-  };
+  userSettings: UserSettings;
 
-  constructor(private platform: Platform,
-    private geolocation: Geolocation) {
-    this.platform.ready().then(() => {
-
-      this.geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 30000
-      })
-        .then((position: Geoposition) => {
-          this.center = [position.coords.latitude, position.coords.longitude];
-          this.setMap();
-        }).catch((error) => {
-          console.log('Error getting location', error);
-        });
-    })
+  get isHomeRecorded(): boolean {
+    return this._isHomeRecorded;
   }
 
-  ngOnInit() {
-    this.isHomeRecorded = false;
-    this.userSettings.isolationStartedAt = moment().set({
-      hour: 12,
-      minute: 0,
-      second: 0,
-      millisecond: 0
-    }).toISOString();
-    
-    this.saveUserSettings();
+  get isolationStartedAt(): string {
+    return this.userSettings ? this.userSettings.isolationStartedAt : null;
+  }
+
+  set isolationStartedAt(value: string) {
+    this.userSettings.isolationStartedAt = value;
+  }
+
+  constructor(private platform: Platform,
+    private geolocation: Geolocation,
+    private authenticationService: AuthenticationService,
+    private userSettingsService: UserSettingsService) {
+
+    this.platform.ready().then(async () => {
+
+      try {
+        this.userSettings = await this.userSettingsService.getUserSettings(this.authenticationService.userData);
+        this._isHomeRecorded = !!(this.userSettings.homePosition.latitude && this.userSettings.homePosition.longitude);
+        const position: Geoposition = await this.geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 30000
+        });
+        this.center = [position.coords.latitude, position.coords.longitude];
+        this.setMap();
+      } catch (err) {
+        console.log('Error UserSettings initialization', err);
+      }
+    });
   }
 
   onHomeRecordedChanged(event) {
@@ -71,7 +73,7 @@ export class Tab3Page implements OnInit {
   setMap() {
     setTimeout(() => {
       this.map = L.map('map').setView(this.center, 16);
-      L.tileLayer(`https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${ACCES_TOKEN}`, {
+      L.tileLayer(`https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`, {
         maxZoom: 18,
         id: 'mapbox/streets-v11',
         tileSize: 256,
@@ -84,5 +86,9 @@ export class Tab3Page implements OnInit {
 
   saveUserSettings() {
     console.log('SAVE', this.userSettings);
+  }
+
+  signOut() {
+    this.authenticationService.SignOut();
   }
 }
