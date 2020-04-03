@@ -18,7 +18,7 @@ const ACCES_TOKEN = environment.leaflet.accessToken;
 export class Tab3Page {
 
   private _isHomeRecorded: boolean = false;
-
+  isDarkMode: boolean;
   map: L.Map;
   center: L.PointTuple;
   userSettings: UserSettings;
@@ -55,19 +55,8 @@ export class Tab3Page {
         console.log('Error UserSettings initialization', err);
       }
     });
-  }
 
-  onHomeRecordedChanged(event) {
-    const { value } = event.target;
-    if (value) {
-      this.userSettings.homePosition.latitude = this.center[0];
-      this.userSettings.homePosition.longitude = this.center[1];
-    } else {
-      this.userSettings.homePosition.latitude = null;
-      this.userSettings.homePosition.longitude = null;
-    }
-
-    this.saveUserSettings();
+    this.isDarkMode = JSON.parse(localStorage.getItem('isDarkMode') || 'false');
   }
 
   setMap() {
@@ -79,10 +68,14 @@ export class Tab3Page {
         tileSize: 256,
         accessToken: ACCES_TOKEN
       }).addTo(this.map);
-
-      L.marker(this.center).addTo(this.map);
-    }, 500); // Adjust the value (in ms)
+    }
   }
+
+  toggleDakTheme() {
+    localStorage.setItem('isDarkMode', JSON.stringify(this.isDarkMode));
+    document.body.classList.toggle('dark', this.isDarkMode);
+  }
+
 
   saveUserSettings() {
     console.log('SAVE', this.userSettings);
