@@ -43,10 +43,6 @@ export class AuthenticationService {
         return (user.emailVerified !== false) ? true : false;
     }
 
-    setLocalUserData(userData: any) {
-        localStorage.setItem('user', userData);
-    }
-
     // Login in with email/password
     SignIn(email, password) {
         return this.ngFireAuth.auth.signInWithEmailAndPassword(email, password);
@@ -88,25 +84,43 @@ export class AuthenticationService {
     AuthLogin(provider) {
         return this.ngFireAuth.auth.signInWithPopup(provider)
             .then((result) => {
-                if (JSON.parse(localStorage.getItem(`${ result.user.uid}-firstStart`) || 'true')) {
-                    localStorage.setItem(`${ result.user.uid}-firstStart`, JSON.stringify(false));
+                if (JSON.parse(localStorage.getItem(`${result.user.uid}-firstStart`) || 'true')) {
+                    localStorage.setItem(`${result.user.uid}-firstStart`, JSON.stringify(false));
                     this.ngZone.run(() => {
-                        this.router.navigate(['/tabs/tab3']);
+                        this.router.navigate(['/tabs/settings']);
                     });
                 } else {
                     this.ngZone.run(() => {
                         this.router.navigate(['/tabs']);
                     });
                 }
-                // this.SetUserData(result.user);
+                this.setLocalUserData(result.user);
             }).catch((error) => {
                 window.alert(error);
                 console.error(error);
             });
     }
 
+    public getUser(): Promise<User> {
+        let user = JSON.parse(localStorage.getItem('user'));
+        if (!user || (user && !user.uid)) {
+            user = this.ngFireAuth.user.toPromise().then( res => this.setLocalUserData(res));
+        }
+        return Promise.resolve(user);
+    }
+
+    // Sign-out
+    public SignOut() {
+        return this.ngFireAuth.auth.signOut().then(() => {
+            localStorage.removeItem('user');
+            localStorage.removeItem('isDarkMode');
+            document.body.classList.toggle('dark', false);
+            this.router.navigate(['login']);
+        });
+    }
+
     // Store user in localStorage
-    SetUserData(user) {
+    private setUserData(user) {
         const userRef: AngularFirestoreDocument<any> = this.afStore.doc(`users/${user.uid}`);
         const userData: User = {
             uid: user.uid,
@@ -120,14 +134,21 @@ export class AuthenticationService {
         });
     }
 
-    // Sign-out
-    SignOut() {
-        return this.ngFireAuth.auth.signOut().then(() => {
-            localStorage.removeItem('user');
-            localStorage.removeItem('isDarkMode');
-            document.body.classList.toggle('dark', false);
-            this.router.navigate(['login']);
-        });
+    private setLocalUserData(user: any) {
+        if (typeof user === 'string' || user instanceof String) {
+            // @ts-ignore
+            user = JSON.parse(user);
+        }
+
+        const userData: User = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            emailVerified: user.emailVerified
+        };
+        localStorage.setItem('user', JSON.stringify(userData));
+        return user;
     }
 
 }
