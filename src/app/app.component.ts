@@ -55,16 +55,17 @@ export class AppComponent {
                                 latitude: location.latitude,
                                 longitude: location.longitude
                             });
-    
+
                             this.locationService.prepend(`${now} - ${distance}km (${location.latitude};${location.longitude})`);
                         }
 
-                        if (this.platform.is('ios')) {
-                            this.backgroundGeolocation.finish();
-                        }
+                        this.backgroundGeolocation.finish();
                     });
 
             });
+
+        this.backgroundGeolocation.start();
+
         this.platform.ready().then(() => {
             this.statusBar.styleDefault();
             this.splashScreen.hide();
