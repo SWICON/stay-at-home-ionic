@@ -24,12 +24,12 @@
         <ion-list>
           <ion-item [class.ion-datetime]="false">
             <ion-label>When did your isolation begin?</ion-label>
-            <ion-datetime [(ngModel)]="isolationBegin" (ionChange)="updateDate($event)" displayTimezone="utc">
+            <ion-datetime [(ngModel)]="isolationStartedAt">
             </ion-datetime>
           </ion-item>
           <ion-item>
             <ion-label>Is this your Home?</ion-label>
-            <ion-toggle slot="end" [(ngModel)]="homeIsCorrect" (ionChange)="onHomeRecordedChanged($event)"></ion-toggle>            
+            <ion-toggle slot="end" [ngModel]="isHomeRecorded" (ionChange)="onHomeRecordedChanged($event)"></ion-toggle>            
           </ion-item>
         </ion-list>
       </ion-col>
@@ -50,7 +50,7 @@
       <ion-col>
         <ion-item>
           <ion-label>Do you want to sign out of the app?</ion-label>
-          <ion-button color="danger">Sign out</ion-button>
+          <ion-button color="danger" (click)="signOut()">Sign out</ion-button>
         </ion-item>
       </ion-col>
     </ion-row>
