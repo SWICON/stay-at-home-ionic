@@ -49,11 +49,8 @@
     <ion-row>
       <ion-col>
         <ion-item lines="full">
-          <ion-icon slot="start" name="moon"></ion-icon>
-          <ion-label>
-            Toggle Dark Theme
-          </ion-label>
-          <ion-toggle id="themeToggle" [(ngModel)]="isDarkMode" slot="end" (ionChange)="toggleDakTheme($event)"></ion-toggle>
+          <ion-label>Toggle Dark Theme</ion-label>
+          <ion-toggle id="themeToggle" [(ngModel)]="isDarkMode" slot="end" (ionChange)="toggleDarkTheme($event)"></ion-toggle>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -61,7 +58,7 @@
       <ion-col>
         <ion-item>
           <ion-label>Do you want to sign out of the app?</ion-label>
-          <ion-button color="danger" (click)="authService.SignOut()">Sign out</ion-button>
+          <ion-button color="danger" (click)="signOut()">Sign out</ion-button>
         </ion-item>
       </ion-col>
     </ion-row>
