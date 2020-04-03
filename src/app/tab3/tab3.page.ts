@@ -61,6 +61,13 @@ export class Tab3Page {
   }
 
   onHomeRecordedChanged(event) {
+    if (event.detail.checked) {
+      this.userSettings.homePosition.latitude = this.center[0];
+      this.userSettings.homePosition.longitude = this.center[1];
+    } else {
+      this.userSettings.homePosition.latitude = null;
+      this.userSettings.homePosition.longitude = null;
+    }
     this.updateUserSettings();
   }
 

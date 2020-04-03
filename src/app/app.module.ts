@@ -19,6 +19,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthenticationService } from './shared/authentication-service';
 import { UserSettingsService } from './shared/user-settings.service';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { UserSettingsService } from './shared/user-settings.service';
         SplashScreen,
         GooglePlus,
         Geolocation,
+        BackgroundGeolocation,
         LocationAccuracy,
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         AuthenticationService,
