@@ -1,15 +1,18 @@
-<ion-header [translucent]="true" class="ion-padding" *ngIf="!authService.isLoggedIn">
+<ion-header [translucent]="true" class="ion-padding" *ngIf="!isLoggedIn">
     <ion-toolbar>
         <ion-title class="title-large ion-text-center">
             Stay@Home App
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding ion-margin login-c" *ngIf="!authService.isLoggedIn">
+<ion-content class="ion-padding ion-margin login-c" *ngIf="!isLoggedIn">
     <ion-grid class="ion-align-items-center">
         <ion-row class="ion-align-items-center">
             <ion-col>
-                <ion-title size="large"><ion-icon name="home"></ion-icon> Login to Stay@Home App</ion-title>
+                <ion-title size="large">
+                    <ion-icon name="home"></ion-icon>
+                    Login to Stay@Home App
+                </ion-title>
             </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
@@ -17,7 +20,7 @@
                 <ion-button
                         type="submit"
                         color="danger"
-                        (click)="authService.GoogleAuth()"
+                        (click)="logInGoogle()"
                         expand="block">
                     Login with Google
                 </ion-button>
@@ -28,7 +31,7 @@
                 <ion-button
                         type="submit"
                         color="primary"
-                        (click)="authService.FacebookAuth()"
+                        (click)="logInFacebook()"
                         expand="block">
                     Login with Facebook
                 </ion-button>
@@ -36,7 +39,7 @@
         </ion-row>
     </ion-grid>
 </ion-content>
-<ion-footer *ngIf="!authService.isLoggedIn">
+<ion-footer *ngIf="!isLoggedIn">
     <ion-toolbar>
         <ion-title class="ion-text-center" size="small">
             Swision Hungary
