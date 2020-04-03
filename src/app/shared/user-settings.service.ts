@@ -39,14 +39,17 @@ export class UserSettingsService {
 
   getUserSettings(user: User): Promise<UserSettings> {
 
-    // TODO if any return user settings
-    // else create new one
-    const userSettings = this.createUserSettings(user);
+    let userSettings = JSON.parse(localStorage.getItem('user-settings'));
+
+    if (!userSettings) {
+      userSettings = this.createUserSettings(user);
+    }
 
     return Promise.resolve(userSettings);
   }
 
   updateUserSettings(userSettings: UserSettings) {
-    console.log('SAVE', userSettings);
+    this.userSettings = userSettings;
+    localStorage.setItem('user-settings', JSON.stringify(userSettings));
   }
 }
