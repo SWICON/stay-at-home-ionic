@@ -1,3 +1,22 @@
 ion-content ion-toolbar {
   --background: translucent;
 }
+
+.full-grid {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.home-title{
+  font-size: x-large;
+}
+.home-h2{
+  font-size: larger;
+}
+.img{
+  height: 70vh;
+  width: auto;
+  margin: auto;
+  display: block;
+}
