@@ -87,7 +87,7 @@ export class AuthenticationService {
                 if (JSON.parse(localStorage.getItem(`${result.user.uid}-firstStart`) || 'true')) {
                     localStorage.setItem(`${result.user.uid}-firstStart`, JSON.stringify(false));
                     this.ngZone.run(() => {
-                        this.router.navigate(['/tabs/tab3']);
+                        this.router.navigate(['/tabs/settings']);
                     });
                 } else {
                     this.ngZone.run(() => {
