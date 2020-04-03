@@ -8,7 +8,7 @@ import { AuthenticationService } from '../shared/authentication-service';
 import { UserSettingsService } from '../shared/user-settings.service';
 import { environment } from '../../environments/environment';
 
-const ACCES_TOKEN = environment.leaflet.accessToken;
+const ACCESS_TOKEN = environment.leaflet.accessToken;
 
 @Component({
   selector: 'app-tab3',
@@ -33,6 +33,7 @@ export class Tab3Page {
 
   set isolationStartedAt(value: string) {
     this.userSettings.isolationStartedAt = value;
+    this.updateUserSettings();
   }
 
   constructor(private platform: Platform,
@@ -59,29 +60,33 @@ export class Tab3Page {
     this.isDarkMode = JSON.parse(localStorage.getItem('isDarkMode') || 'false');
   }
 
-  setMap() {
+  onHomeRecordedChanged(event) {
+    this.updateUserSettings();
+  }
+
+  toggleDarkTheme() {
+    localStorage.setItem('isDarkMode', JSON.stringify(this.isDarkMode));
+    document.body.classList.toggle('dark', this.isDarkMode);
+  }
+
+  signOut() {
+    this.authenticationService.SignOut();
+  }
+
+  private setMap() {
     setTimeout(() => {
       this.map = L.map('map').setView(this.center, 16);
       L.tileLayer(`https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`, {
         maxZoom: 18,
         id: 'mapbox/streets-v11',
         tileSize: 256,
-        accessToken: ACCES_TOKEN
+        accessToken: ACCESS_TOKEN
       }).addTo(this.map);
-    }
+      L.marker(this.center).addTo(this.map);
+    }, 400);
   }
 
-  toggleDakTheme() {
-    localStorage.setItem('isDarkMode', JSON.stringify(this.isDarkMode));
-    document.body.classList.toggle('dark', this.isDarkMode);
-  }
-
-
-  saveUserSettings() {
-    console.log('SAVE', this.userSettings);
-  }
-
-  signOut() {
-    this.authenticationService.SignOut();
+  private updateUserSettings() {
+    this.userSettingsService.updateUserSettings(this.userSettings);
   }
 }
