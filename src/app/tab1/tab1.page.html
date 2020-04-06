@@ -27,7 +27,8 @@
         <ion-row *ngIf="user">
             <ion-col>
                 <div class="ion-text-center home-title">
-                    Hello {{user.displayName}}
+                    Hello <ion-input [disabled]="!nickNameEdit" [(ngModel)]="user.nickName" (press)="setEditableNick()" (dblclick)="setEditableNick()"></ion-input>
+
                 </div>
             </ion-col>
         </ion-row>

@@ -43,7 +43,7 @@ export class LocationService {
     calcDistanceInKm(coord1: Position, coord2: Position) {
         const R = 6371; // Radius of the earth in km
         const dLat = deg2Rad(coord2.latitude - coord1.latitude);  // deg2rad below
-        var dLon = deg2Rad(coord2.longitude - coord2.longitude);
+        let dLon = deg2Rad(coord2.longitude - coord2.longitude);
         const a =
             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(deg2Rad(coord1.latitude)) * Math.cos(deg2Rad(coord2.latitude)) *

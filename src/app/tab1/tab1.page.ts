@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Platform, ToastController} from '@ionic/angular';
 import {AuthenticationService} from '../shared/authentication-service';
-import {User} from '../shared/user';
+import {AppUser} from '../shared/appUser';
 import {UserSettings} from '../shared/user-settings.interface';
 import {UserSettingsService} from '../shared/user-settings.service';
 
@@ -19,8 +19,9 @@ function daysBetween(one, another) {
 export class Tab1Page implements OnInit {
     isUserLoggedIn: any = false;
     userSettings: UserSettings;
-    user: User;
+    user: AppUser;
     daysInIsolation: number;
+    nickNameEdit = false;
 
     points = {
         collected: 15,
@@ -52,6 +53,10 @@ export class Tab1Page implements OnInit {
 
 
     ngOnInit(): void {
+    }
+
+    setEditableNick() {
+       this.nickNameEdit = true;
     }
 
 

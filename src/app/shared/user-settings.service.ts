@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { auth } from 'firebase';
 import * as moment from 'moment';
 
-import { User } from './user';
+import { AppUser } from './appUser';
 import { UserSettings } from './user-settings.interface';
 import { Observable, of } from 'rxjs';
 
@@ -21,9 +21,11 @@ export class UserSettingsService {
 
   }
 
-  createUserSettings(user: User): UserSettings {
+  createUserSettings(user: AppUser): UserSettings {
     return this.userSettings = {
       userUid: null,
+      isDarkMode: false,
+      isfirstLogin: true,
       isolationStartedAt: moment().set({
         hour: 0,
         minute: 0,
@@ -32,12 +34,13 @@ export class UserSettingsService {
       }).format(),
       homePosition: {
         latitude: null,
-        longitude: null
+        longitude: null,
+        geohash: null
       }
     };
   }
 
-  getUserSettings(user: User): Promise<UserSettings> {
+  getUserSettings(user: AppUser): Promise<UserSettings> {
 
     let userSettings = JSON.parse(localStorage.getItem('user-settings'));
 
