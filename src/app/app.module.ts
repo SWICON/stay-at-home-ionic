@@ -11,7 +11,7 @@ import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
 
@@ -19,7 +19,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthenticationService } from './shared/authentication-service';
 import { UserSettingsService } from './shared/user-settings.service';
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
+
 
 
 @NgModule({

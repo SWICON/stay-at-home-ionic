@@ -1,10 +1,12 @@
-import {Injectable, NgZone} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
-import {Router} from '@angular/router';
-import {auth} from 'firebase';
+import { Injectable, NgZone } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
+import { auth } from 'firebase';
 
-import {User} from './user';
+import { User } from './user';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
     providedIn: 'root'
@@ -14,10 +16,12 @@ export class AuthenticationService {
     userData: any;
 
     constructor(
+        private platform: Platform,
         public afStore: AngularFirestore,
         public ngFireAuth: AngularFireAuth,
         public router: Router,
-        public ngZone: NgZone
+        public ngZone: NgZone,
+        private googlePlus: GooglePlus
     ) {
         this.ngFireAuth.authState.subscribe(user => {
             if (user) {
@@ -72,8 +76,26 @@ export class AuthenticationService {
     }
 
     // Sign in with Gmail
-    GoogleAuth() {
-        return this.AuthLogin(new auth.GoogleAuthProvider());
+    async GoogleAuth() {
+        try {
+            const { accessToken } = await this.googlePlus.login({ offline: true });
+
+            const result = await this.ngFireAuth.auth.signInWithCredential(auth.GoogleAuthProvider.credential(null, accessToken));
+            if (JSON.parse(localStorage.getItem(`${result.user.uid}-firstStart`) || 'true')) {
+                localStorage.setItem(`${result.user.uid}-firstStart`, JSON.stringify(false));
+                this.ngZone.run(() => {
+                    this.router.navigate(['/tabs/settings']);
+                });
+            } else {
+                this.ngZone.run(() => {
+                    this.router.navigate(['/tabs']);
+                });
+            }
+            this.setLocalUserData(result.user);
+        } catch (err) {
+            console.error(err);
+            alert('Something went wrong. Please try again later.');
+        }
     }
 
     FacebookAuth() {
@@ -104,7 +126,7 @@ export class AuthenticationService {
     public getUser(): Promise<User> {
         let user = JSON.parse(localStorage.getItem('user'));
         if (!user || (user && !user.uid)) {
-            user = this.ngFireAuth.user.toPromise().then( res => this.setLocalUserData(res));
+            user = this.ngFireAuth.user.toPromise().then(res => this.setLocalUserData(res));
         }
         return Promise.resolve(user);
     }

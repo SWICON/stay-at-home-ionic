@@ -43,32 +43,32 @@ export class AppComponent {
     }
 
     initializeApp() {
-        this.backgroundGeolocation.configure(backgroundGeolocationConfig)
-            .then(() => {
-                this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
-                    .subscribe(async (location: BackgroundGeolocationResponse) => {
-                        const { homePosition } = await this.userSettingsService.getUserSettings(null);
-
-                        if (!!(homePosition.latitude && homePosition.longitude)) {
-                            const now = moment(location.time).format();
-                            const distance = this.locationService.calcDistanceInKm(homePosition, {
-                                latitude: location.latitude,
-                                longitude: location.longitude
-                            });
-
-                            this.locationService.prepend(`${now} - ${distance}km (${location.latitude};${location.longitude})`);
-                        }
-
-                        this.backgroundGeolocation.finish();
-                    });
-
-            });
-
-        this.backgroundGeolocation.start();
-
         this.platform.ready().then(() => {
+            console.log('platform is ready');
             this.statusBar.styleDefault();
             this.splashScreen.hide();
+            this.backgroundGeolocation.configure(backgroundGeolocationConfig)
+                .then(() => {
+                    this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
+                        .subscribe(async (location: BackgroundGeolocationResponse) => {
+                            const { homePosition } = await this.userSettingsService.getUserSettings(null);
+
+                            if (!!(homePosition.latitude && homePosition.longitude)) {
+                                const now = moment(location.time).format();
+                                const distance = this.locationService.calcDistanceInKm(homePosition, {
+                                    latitude: location.latitude,
+                                    longitude: location.longitude
+                                });
+
+                                this.locationService.prepend(`${now} - ${distance}km (${location.latitude};${location.longitude})`);
+                            }
+
+                            this.backgroundGeolocation.finish();
+                        });
+
+                });
+
+            this.backgroundGeolocation.start();
 
             if (!this.platform.is('desktop')) {
                 this.locationAccuracy.canRequest().then((canRequest: boolean) => {
