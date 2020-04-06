@@ -2,16 +2,18 @@ import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
-import { auth } from 'firebase';
-
-import { User } from './user';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { Platform } from '@ionic/angular';
+import { auth, User } from 'firebase';
+import { AppUser } from './appUser';
+import AuthProvider = auth.AuthProvider;
+import GoogleAuthProvider = auth.GoogleAuthProvider;
+import FacebookAuthProvider = auth.FacebookAuthProvider;
+import UserCredential = auth.UserCredential;
 
 @Injectable({
     providedIn: 'root'
 })
-
 export class AuthenticationService {
     userData: any;
 
@@ -23,14 +25,14 @@ export class AuthenticationService {
         public ngZone: NgZone,
         private googlePlus: GooglePlus
     ) {
-        this.ngFireAuth.authState.subscribe(user => {
+        this.ngFireAuth.authState.subscribe((user: User) => {
             if (user) {
                 this.userData = user;
-                this.setLocalUserData(JSON.stringify(this.userData));
-                JSON.parse(localStorage.getItem('user'));
+                this.setLocalUserData(this.userData);
+                // JSON.parse(localStorage.getItem('user'));
             } else {
-                this.setLocalUserData(null);
-                JSON.parse(localStorage.getItem('user'));
+                //  this.setLocalUserData(null);
+                // JSON.parse(localStorage.getItem('user'));
             }
         });
     }
@@ -47,83 +49,55 @@ export class AuthenticationService {
         return (user.emailVerified !== false) ? true : false;
     }
 
-    // Login in with email/password
-    SignIn(email, password) {
-        return this.ngFireAuth.auth.signInWithEmailAndPassword(email, password);
-    }
-
-    // Register user with email/password
-    RegisterUser(email, password) {
-        return this.ngFireAuth.auth.createUserWithEmailAndPassword(email, password);
-    }
-
-    // Email verification when new user register
-    SendVerificationMail() {
-        return this.ngFireAuth.auth.currentUser.sendEmailVerification()
-            .then(() => {
-                this.router.navigate(['verify-email']);
-            });
-    }
-
-    // Recover password
-    PasswordRecover(passwordResetEmail) {
-        return this.ngFireAuth.auth.sendPasswordResetEmail(passwordResetEmail)
-            .then(() => {
-                window.alert('Password reset email has been sent, please check your inbox.');
-            }).catch((error) => {
-                window.alert(error);
-            });
-    }
-
-    // Sign in with Gmail
-    async GoogleAuth() {
+    // Sign in with Google
+    async googleAuth(pendingCredential?): Promise<UserCredential> {
         try {
-            const { accessToken } = await this.googlePlus.login({ offline: true });
+            let result: UserCredential;
 
-            const result = await this.ngFireAuth.auth.signInWithCredential(auth.GoogleAuthProvider.credential(null, accessToken));
-            if (JSON.parse(localStorage.getItem(`${result.user.uid}-firstStart`) || 'true')) {
-                localStorage.setItem(`${result.user.uid}-firstStart`, JSON.stringify(false));
-                this.ngZone.run(() => {
-                    this.router.navigate(['/tabs/settings']);
-                });
+            if (this.platform.is('cordova')) {
+                const { accessToken } = await this.googlePlus.login({ offline: true });
+                result = await this.ngFireAuth.auth.signInWithCredential(GoogleAuthProvider.credential(null, accessToken));
             } else {
-                this.ngZone.run(() => {
-                    this.router.navigate(['/tabs']);
-                });
+                result = await this.ngFireAuth.auth.signInWithPopup(new GoogleAuthProvider());
             }
-            this.setLocalUserData(result.user);
+
+            await this.updateUserData(result, pendingCredential);
+
+            return result;
         } catch (err) {
-            console.error(err);
-            alert('Something went wrong. Please try again later.');
+            if (err.code === 'auth/account-exists-with-different-credential') {
+                await this.facebookAuth(err.credential);
+            } else {
+                console.error(err);
+                alert('Something went wrong. Please try again later.');
+            }
         }
     }
 
-    FacebookAuth() {
-        return this.AuthLogin(new auth.FacebookAuthProvider());
+    async facebookAuth(pendingCredential?) {
+        try {
+            let result: UserCredential;
+
+            if (this.platform.is('cordova')) {
+
+            } else {
+                result = await this.ngFireAuth.auth.signInWithPopup(new FacebookAuthProvider());
+            }
+
+            await this.updateUserData(result, pendingCredential);
+
+            return result;
+        } catch (err) {
+            if (err.code === 'auth/account-exists-with-different-credential') {
+                await this.googleAuth(err.credential);
+            } else {
+                console.error(err);
+                alert('Something went wrong. Please try again later.');
+            }
+        }
     }
 
-    // Auth providers
-    AuthLogin(provider) {
-        return this.ngFireAuth.auth.signInWithPopup(provider)
-            .then((result) => {
-                if (JSON.parse(localStorage.getItem(`${result.user.uid}-firstStart`) || 'true')) {
-                    localStorage.setItem(`${result.user.uid}-firstStart`, JSON.stringify(false));
-                    this.ngZone.run(() => {
-                        this.router.navigate(['/tabs/settings']);
-                    });
-                } else {
-                    this.ngZone.run(() => {
-                        this.router.navigate(['/tabs']);
-                    });
-                }
-                this.setLocalUserData(result.user);
-            }).catch((error) => {
-                window.alert(error);
-                console.error(error);
-            });
-    }
-
-    public getUser(): Promise<User> {
+    public getUser(): Promise<AppUser> {
         let user = JSON.parse(localStorage.getItem('user'));
         if (!user || (user && !user.uid)) {
             user = this.ngFireAuth.user.toPromise().then(res => this.setLocalUserData(res));
@@ -132,7 +106,7 @@ export class AuthenticationService {
     }
 
     // Sign-out
-    public SignOut() {
+    public signOut() {
         return this.ngFireAuth.auth.signOut().then(() => {
             localStorage.removeItem('user');
             localStorage.removeItem('isDarkMode');
@@ -141,10 +115,31 @@ export class AuthenticationService {
         });
     }
 
+    private async updateUserData(result: UserCredential, pendingCredential) {
+        if (pendingCredential) {
+            result = await result.user.linkWithCredential(pendingCredential);
+        }
+
+        if (JSON.parse(localStorage.getItem(`${result.user.uid}-firstStart`) || 'true')) {
+            localStorage.setItem(`${result.user.uid}-firstStart`, JSON.stringify(false));
+            this.ngZone.run(() => {
+                this.router.navigate(['/tabs/settings']);
+            });
+        }
+        else {
+            this.ngZone.run(() => {
+                this.router.navigate(['/tabs']);
+            });
+        }
+        this.setLocalUserData(result.user);
+    }
+
     // Store user in localStorage
-    private setUserData(user) {
+    private setUserData(user: User) {
         const userRef: AngularFirestoreDocument<any> = this.afStore.doc(`users/${user.uid}`);
-        const userData: User = {
+        const userData: AppUser = {
+            nickName: user.email.split('@')[0],
+            userSettings: undefined,
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
@@ -156,13 +151,14 @@ export class AuthenticationService {
         });
     }
 
-    private setLocalUserData(user: any) {
+    private setLocalUserData(user: User): User {
         if (typeof user === 'string' || user instanceof String) {
             // @ts-ignore
             user = JSON.parse(user);
         }
 
-        const userData: User = {
+        const userData: AppUser = {
+            nickName: user.email.split('@')[0], userSettings: undefined,
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
@@ -172,5 +168,4 @@ export class AuthenticationService {
         localStorage.setItem('user', JSON.stringify(userData));
         return user;
     }
-
 }

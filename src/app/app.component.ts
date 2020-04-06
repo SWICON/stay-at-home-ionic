@@ -1,10 +1,16 @@
 import { Component } from '@angular/core';
+import {
+    BackgroundGeolocation,
+    BackgroundGeolocationConfig,
+    BackgroundGeolocationEvents,
+    BackgroundGeolocationResponse
+} from '@ionic-native/background-geolocation/ngx';
 import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationEvents, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation/ngx';
 import { Platform } from '@ionic/angular';
 import * as moment from 'moment';
+import geohash from 'ngeohash';
 import { LocationService } from './shared/location.service';
 import { UserSettingsService } from './shared/user-settings.service';
 
@@ -14,7 +20,7 @@ const backgroundGeolocationConfig: BackgroundGeolocationConfig = {
     distanceFilter: 30,
     debug: true,
     stopOnTerminate: false
-}
+};
 
 @Component({
     selector: 'app-root',
