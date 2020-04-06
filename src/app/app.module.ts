@@ -19,6 +19,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthenticationService } from './shared/authentication-service';
 import { UserSettingsService } from './shared/user-settings.service';
+import { Facebook } from '@ionic-native/facebook/ngx';
 
 
 
@@ -36,6 +37,7 @@ import { UserSettingsService } from './shared/user-settings.service';
         StatusBar,
         SplashScreen,
         GooglePlus,
+        Facebook,
         Geolocation,
         BackgroundGeolocation,
         LocationAccuracy,
