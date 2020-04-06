@@ -108,7 +108,8 @@
     <plugin name="@mauron85/cordova-plugin-background-geolocation" spec="^3.1.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.2.0" />
     <plugin name="cordova-plugin-googleplus" spec="~8.4.0">
+        <variable name="REVERSED_CLIENT_ID" value="159351352235-8fdq2rinktpnhmavs9m0brk2k7q7ua8c.apps.googleusercontent.com" />
         <variable name="PLAY_SERVICES_VERSION" value="15.0.1" />
     </plugin>
-    <allow-navigation href="http://localhost:8100" sessionid="2560e13e" />
+    <allow-navigation href="http://localhost:8100" sessionid="487d7c54" />
 </widget>

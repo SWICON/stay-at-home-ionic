@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
+import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook/ngx';
 import { Platform } from '@ionic/angular';
 import { auth, User } from 'firebase';
 import { AppUser } from './appUser';
@@ -23,7 +24,8 @@ export class AuthenticationService {
         public ngFireAuth: AngularFireAuth,
         public router: Router,
         public ngZone: NgZone,
-        private googlePlus: GooglePlus
+        private googlePlus: GooglePlus,
+        private facebook: Facebook
     ) {
         this.ngFireAuth.authState.subscribe((user: User) => {
             if (user) {
@@ -79,7 +81,8 @@ export class AuthenticationService {
             let result: UserCredential;
 
             if (this.platform.is('cordova')) {
-
+                const res: FacebookLoginResponse = await this.facebook.login(['public_profile', 'email']);
+                result = await this.ngFireAuth.auth.signInWithCredential(FacebookAuthProvider.credential(res.authResponse.accessToken));
             } else {
                 result = await this.ngFireAuth.auth.signInWithPopup(new FacebookAuthProvider());
             }

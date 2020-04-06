@@ -53,30 +53,31 @@ export class AppComponent {
             console.log('platform is ready');
             this.statusBar.styleDefault();
             this.splashScreen.hide();
-            this.backgroundGeolocation.configure(backgroundGeolocationConfig)
-                .then(() => {
-                    this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
-                        .subscribe(async (location: BackgroundGeolocationResponse) => {
-                            const { homePosition } = await this.userSettingsService.getUserSettings(null);
 
-                            if (!!(homePosition.latitude && homePosition.longitude)) {
-                                const now = moment(location.time).format();
-                                const distance = this.locationService.calcDistanceInKm(homePosition, {
-                                    latitude: location.latitude,
-                                    longitude: location.longitude
-                                });
+            if (this.platform.is('cordova')) {
+                this.backgroundGeolocation.configure(backgroundGeolocationConfig)
+                    .then(() => {
+                        this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
+                            .subscribe(async (location: BackgroundGeolocationResponse) => {
+                                const { homePosition } = await this.userSettingsService.getUserSettings(null);
 
-                                this.locationService.prepend(`${now} - ${distance}km (${location.latitude};${location.longitude})`);
-                            }
+                                if (!!(homePosition.latitude && homePosition.longitude)) {
+                                    const now = moment(location.time).format('MM.dd. HH:mm');
+                                    const distance = this.locationService.calcDistanceInKm(homePosition, {
+                                        latitude: location.latitude,
+                                        longitude: location.longitude
+                                    });
 
-                            this.backgroundGeolocation.finish();
-                        });
+                                    this.locationService.prepend(`${now} - ${distance}km (${location.latitude};${location.longitude})`);
+                                }
 
-                });
+                                this.backgroundGeolocation.finish();
+                            });
 
-            this.backgroundGeolocation.start();
+                    });
 
-            if (!this.platform.is('desktop')) {
+                this.backgroundGeolocation.start();
+
                 this.locationAccuracy.canRequest().then((canRequest: boolean) => {
                     if (canRequest) {
                         // the accuracy option will be ignored by iOS
