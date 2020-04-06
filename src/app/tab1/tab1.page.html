@@ -24,15 +24,11 @@
                 </div>
             </ion-col>
         </ion-row>
-        <ion-row>
+        <ion-row *ngIf="user">
             <ion-col>
-
-                <ion-list-header *ngIf="user">
-                    <div class="ion-text-center">
-                        Hello {{user.displayName}}
-                    </div>
-                </ion-list-header>
-
+                <div class="ion-text-center home-title">
+                    Hello {{user.displayName}}
+                </div>
             </ion-col>
         </ion-row>
         <ion-row>
