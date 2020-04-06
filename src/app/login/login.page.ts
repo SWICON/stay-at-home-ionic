@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
-import {Router} from '@angular/router';
-import {AuthenticationService} from '../shared/authentication-service';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthenticationService } from '../shared/authentication-service';
 
 @Component({
     selector: 'app-login',
@@ -12,22 +12,7 @@ export class LoginPage {
     constructor(
         public authService: AuthenticationService,
         public router: Router
-    ) {
-    }
-
-    // logIn(email, password) {
-    //     this.authService.SignIn(email.value, password.value)
-    //         .then((res) => {
-    //             if (this.authService.isEmailVerified) {
-    //                 this.router.navigate(['tabs/tab1']);
-    //             } else {
-    //                 window.alert('Email is not verified');
-    //                 return false;
-    //             }
-    //         }).catch((error) => {
-    //         window.alert(error.message);
-    //     });
-    // }
+    ) { }
 
     // Returns true when user is looged in
     get isLoggedIn(): boolean {
@@ -35,9 +20,9 @@ export class LoginPage {
     }
 
     public logInGoogle() {
-       return  this.authService.GoogleAuth();
+        return this.authService.googleAuth();
     }
     public logInFacebook() {
-       return  this.authService.FacebookAuth();
+        return this.authService.facebookAuth();
     }
 }

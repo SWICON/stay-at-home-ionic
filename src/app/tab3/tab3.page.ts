@@ -77,7 +77,7 @@ export class Tab3Page {
   }
 
   signOut() {
-    this.authenticationService.SignOut();
+    this.authenticationService.signOut();
   }
 
   private setMap() {
