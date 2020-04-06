@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
-import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationEvents, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation/ngx';
-import { Platform } from '@ionic/angular';
+import {Component} from '@angular/core';
+import {
+    BackgroundGeolocation,
+    BackgroundGeolocationConfig,
+    BackgroundGeolocationEvents,
+    BackgroundGeolocationResponse
+} from '@ionic-native/background-geolocation/ngx';
+import {LocationAccuracy} from '@ionic-native/location-accuracy/ngx';
+import {SplashScreen} from '@ionic-native/splash-screen/ngx';
+import {StatusBar} from '@ionic-native/status-bar/ngx';
+import {Platform} from '@ionic/angular';
 import * as moment from 'moment';
-import { LocationService } from './shared/location.service';
-import { UserSettingsService } from './shared/user-settings.service';
+import geohash from 'ngeohash';
+import {LocationService} from './shared/location.service';
+import {UserSettingsService} from './shared/user-settings.service';
 
 const backgroundGeolocationConfig: BackgroundGeolocationConfig = {
     desiredAccuracy: 10,
@@ -14,7 +20,7 @@ const backgroundGeolocationConfig: BackgroundGeolocationConfig = {
     distanceFilter: 30,
     debug: true,
     stopOnTerminate: false
-}
+};
 
 @Component({
     selector: 'app-root',
@@ -47,11 +53,15 @@ export class AppComponent {
             .then(() => {
                 this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
                     .subscribe(async (location: BackgroundGeolocationResponse) => {
-                        const { homePosition } = await this.userSettingsService.getUserSettings(null);
+                        const {homePosition} = await this.userSettingsService.getUserSettings(null);
+                        if (!homePosition.geohash || homePosition.geohash === '') {
+                            homePosition.geohash = geohash.encode(homePosition.latitude, homePosition.latitude);
+                        }
 
                         if (!!(homePosition.latitude && homePosition.longitude)) {
                             const now = moment(location.time).format();
                             const distance = this.locationService.calcDistanceInKm(homePosition, {
+                                geohash: geohash.encode(location.latitude, location.latitude),
                                 latitude: location.latitude,
                                 longitude: location.longitude
                             });

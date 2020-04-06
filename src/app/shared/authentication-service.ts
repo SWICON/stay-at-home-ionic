@@ -2,9 +2,11 @@ import {Injectable, NgZone} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
 import {Router} from '@angular/router';
-import {auth} from 'firebase';
+import {auth, User} from 'firebase';
 
-import {User} from './user';
+import {AppUser} from './appUser';
+import AuthProvider = firebase.auth.AuthProvider;
+import UserCredential = firebase.auth.UserCredential;
 
 @Injectable({
     providedIn: 'root'
@@ -19,14 +21,14 @@ export class AuthenticationService {
         public router: Router,
         public ngZone: NgZone
     ) {
-        this.ngFireAuth.authState.subscribe(user => {
+        this.ngFireAuth.authState.subscribe((user: User) => {
             if (user) {
                 this.userData = user;
-                this.setLocalUserData(JSON.stringify(this.userData));
-                JSON.parse(localStorage.getItem('user'));
+                this.setLocalUserData(this.userData);
+                // JSON.parse(localStorage.getItem('user'));
             } else {
-                this.setLocalUserData(null);
-                JSON.parse(localStorage.getItem('user'));
+              //  this.setLocalUserData(null);
+                // JSON.parse(localStorage.getItem('user'));
             }
         });
     }
@@ -72,20 +74,22 @@ export class AuthenticationService {
     }
 
     // Sign in with Gmail
-    GoogleAuth() {
-        return this.AuthLogin(new auth.GoogleAuthProvider());
+    GoogleAuth(isLinking = false) {
+        return this.AuthLogin(new auth.GoogleAuthProvider(), isLinking);
     }
 
-    FacebookAuth() {
-        return this.AuthLogin(new auth.FacebookAuthProvider());
+    FacebookAuth(isLinking = false) {
+        return this.AuthLogin(new auth.FacebookAuthProvider(), isLinking);
     }
 
     // Auth providers
-    AuthLogin(provider) {
+    AuthLogin(provider: AuthProvider, isLinking = false) {
         return this.ngFireAuth.auth.signInWithPopup(provider)
-            .then((result) => {
+            .then((result: UserCredential) => {
+                // if just linking auth providers here not saving, just after the link
                 if (JSON.parse(localStorage.getItem(`${result.user.uid}-firstStart`) || 'true')) {
                     localStorage.setItem(`${result.user.uid}-firstStart`, JSON.stringify(false));
+
                     this.ngZone.run(() => {
                         this.router.navigate(['/tabs/settings']);
                     });
@@ -94,17 +98,51 @@ export class AuthenticationService {
                         this.router.navigate(['/tabs']);
                     });
                 }
+
                 this.setLocalUserData(result.user);
+                return result;
             }).catch((error) => {
-                window.alert(error);
-                console.error(error);
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    const pendingCred = error.credential;
+                    // The provider account's email address.
+                    const email = error.email;
+                    // todo already has google login redirect
+
+                    if (pendingCred.providerId === 'facebook.com') {
+                        return this.GoogleAuth(true).then((result) => {
+                            // Link to Facebook credential.
+                            return result.user.linkWithCredential(pendingCred).then((usercred) => {
+                                // Facebook account successfully linked to the existing Firebase user.
+                                return usercred;
+                            });
+
+                        });
+
+                    } else {
+                        return this.FacebookAuth(true).then((result) => {
+                            // Link to Facebook credential.
+                            return result.user.linkWithCredential(pendingCred).then((usercred) => {
+                                // Facebook account successfully linked to the existing Firebase user.
+                                return usercred;
+                            });
+
+
+                        });
+                    }
+
+
+                } else {
+                    window.alert(error);
+                    console.error(error);
+
+                }
             });
     }
 
-    public getUser(): Promise<User> {
+    public getUser(): Promise<AppUser> {
         let user = JSON.parse(localStorage.getItem('user'));
         if (!user || (user && !user.uid)) {
-            user = this.ngFireAuth.user.toPromise().then( res => this.setLocalUserData(res));
+            user = this.ngFireAuth.user.toPromise().then(res => this.setLocalUserData(res));
         }
         return Promise.resolve(user);
     }
@@ -120,9 +158,11 @@ export class AuthenticationService {
     }
 
     // Store user in localStorage
-    private setUserData(user) {
+    private setUserData(user: User) {
         const userRef: AngularFirestoreDocument<any> = this.afStore.doc(`users/${user.uid}`);
-        const userData: User = {
+        const userData: AppUser = {
+            nickName: user.email.split('@')[0],
+            userSettings: undefined,
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
@@ -134,13 +174,14 @@ export class AuthenticationService {
         });
     }
 
-    private setLocalUserData(user: any) {
+    private setLocalUserData(user: User): User {
         if (typeof user === 'string' || user instanceof String) {
             // @ts-ignore
             user = JSON.parse(user);
         }
 
-        const userData: User = {
+        const userData: AppUser = {
+            nickName: user.email.split('@')[0], userSettings: undefined,
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,

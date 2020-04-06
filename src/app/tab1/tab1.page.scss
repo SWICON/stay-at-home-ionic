@@ -20,3 +20,7 @@ ion-content ion-toolbar {
   margin: auto;
   display: block;
 }
+
+.text-input[enabled] {
+  opacity: 1;
+}
