@@ -48,11 +48,11 @@
         <div id="map" class="map"></div>
       </ion-col>
     </ion-row>
-    <ion-row>
+    <ion-row *ngIf="appUser">
       <ion-col>
         <ion-item lines="full">
           <ion-label>Toggle Dark Theme</ion-label>
-          <ion-toggle id="themeToggle" [(ngModel)]="isDarkMode" slot="end" (ionChange)="toggleDarkTheme()"></ion-toggle>
+          <ion-toggle id="themeToggle" [(ngModel)]="appUser.isDarkMode" slot="end" (ionChange)="toggleDarkTheme()"></ion-toggle>
         </ion-item>
       </ion-col>
     </ion-row>

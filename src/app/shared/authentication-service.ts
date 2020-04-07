@@ -1,15 +1,14 @@
-import { Injectable, NgZone } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
-import { Router } from '@angular/router';
-import { GooglePlus } from '@ionic-native/google-plus/ngx';
-import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook/ngx';
-import { Platform } from '@ionic/angular';
-import { auth, User } from 'firebase';
-import { AppUser } from './appUser';
-import AuthProvider = auth.AuthProvider;
-import GoogleAuthProvider = auth.GoogleAuthProvider;
+import {Injectable, NgZone} from '@angular/core';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
+import {Router} from '@angular/router';
+import {Facebook, FacebookLoginResponse} from '@ionic-native/facebook/ngx';
+import {GooglePlus} from '@ionic-native/google-plus/ngx';
+import {Platform} from '@ionic/angular';
+import {auth, User} from 'firebase';
+import {AppUser} from './appUser';
 import FacebookAuthProvider = auth.FacebookAuthProvider;
+import GoogleAuthProvider = auth.GoogleAuthProvider;
 import UserCredential = auth.UserCredential;
 
 @Injectable({
@@ -30,7 +29,7 @@ export class AuthenticationService {
         this.ngFireAuth.authState.subscribe((user: User) => {
             if (user) {
                 this.userData = user;
-                this.setLocalUserData(this.userData);
+                // this.setLocalUserData(this.userData);
                 // JSON.parse(localStorage.getItem('user'));
             } else {
                 //  this.setLocalUserData(null);
@@ -41,7 +40,7 @@ export class AuthenticationService {
 
     // Returns true when user is looged in
     get isLoggedIn(): boolean {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
         return (user !== null && user.emailVerified !== false) ? true : false;
     }
 
@@ -57,7 +56,7 @@ export class AuthenticationService {
             let result: UserCredential;
 
             if (this.platform.is('cordova')) {
-                const { accessToken } = await this.googlePlus.login({ offline: true });
+                const {accessToken} = await this.googlePlus.login({offline: true});
                 result = await this.ngFireAuth.auth.signInWithCredential(GoogleAuthProvider.credential(null, accessToken));
             } else {
                 result = await this.ngFireAuth.auth.signInWithPopup(new GoogleAuthProvider());
@@ -103,7 +102,10 @@ export class AuthenticationService {
     public getUser(): Promise<AppUser> {
         let user = JSON.parse(localStorage.getItem('user'));
         if (!user || (user && !user.uid)) {
-            user = this.ngFireAuth.user.toPromise().then(res => this.setLocalUserData(res));
+            user = this.ngFireAuth.user.toPromise().then(res => {
+                return this.createOrGetAppUser(res).then(created => this.setLocalUserData(created)
+                );
+            });
         }
         return Promise.resolve(user);
     }
@@ -118,13 +120,25 @@ export class AuthenticationService {
         });
     }
 
+    public async saveUser(user: AppUser): Promise<AppUser> {
+        // this.setLocalUserData(user);
+        // todo
+        // return this.updateAppUser(user);
+        this.updateAppUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+        return Promise.resolve(user);
+    }
+
     private async updateUserData(result: UserCredential, pendingCredential) {
         if (pendingCredential) {
             result = await result.user.linkWithCredential(pendingCredential);
         }
 
-        if (JSON.parse(localStorage.getItem(`${result.user.uid}-firstStart`) || 'true')) {
-            localStorage.setItem(`${result.user.uid}-firstStart`, JSON.stringify(false));
+        const appUser = await this.createOrGetAppUser(result.user);
+
+        if (appUser.isfirstLogin) {
+            appUser.isfirstLogin = false;
+            this.updateAppUser(appUser);
             this.ngZone.run(() => {
                 this.router.navigate(['/tabs/settings']);
             });
@@ -133,61 +147,57 @@ export class AuthenticationService {
                 this.router.navigate(['/tabs']);
             });
         }
-        this.setLocalUserData(result.user);
+        return this.setLocalUserData(appUser);
+
+
     }
 
-    private createAppUser(user: User): AppUser {
-      return {
-            nickName: user.email.split('@')[0],
-            userSettings: undefined,
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            emailVerified: user.emailVerified
-        };
+    private async createOrGetAppUser(user: User): Promise<AppUser> {
+        return this.afStore.collection(`users`)
+            .doc(user.uid).get().toPromise().then(doc => {
+                let appUser;
+                if (!doc.exists) {
+                    console.log('No such document!');
+                    appUser = {
+                        geohash: null,
+                        isDarkMode: false,
+                        isfirstLogin: true,
+                        isolationStartedAt: null,
+                        latitude: 0,
+                        longitude: 0,
+                        nickName: user.email.split('@')[0],
+                        uid: user.uid,
+                        email: user.email,
+                        locale: 'en'
+                    };
+                    this.afStore.collection('users').doc(appUser.uid).set(appUser);
+                } else {
+                    console.log('Document data:', doc.data());
+
+                    appUser = doc.data();
+                }
+                return Promise.resolve(appUser);
+            }).catch(err => {
+                console.log('Error getting document', err);
+            });
     }
 
-    // Store user in localStorage
-    private setUserData(user: User) {
-        const userRef: AngularFirestoreDocument<any> = this.afStore.doc(`users/${user.uid}`);
-        const userData: AppUser = {
-            nickName: user.email.split('@')[0],
-            userSettings: undefined,
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            emailVerified: user.emailVerified
-        };
-        return userRef.set(userData, {
+    private updateAppUser(user: AppUser) {
+        const userRef: AngularFirestoreDocument<AppUser> = this.afStore.doc(`users/${user.uid}`);
+        return userRef.set(user, {
             merge: true
         });
+
     }
 
-    public saveUser(user: AppUser): Promise<AppUser> {
-       // this.setLocalUserData(user);
-        // todo
-        // return this.setUserData(user);
-        localStorage.setItem('user', JSON.stringify(user));
-        return Promise.resolve(user);
-    }
-
-    private setLocalUserData(user: User): User {
+    private setLocalUserData(user: AppUser): AppUser {
         if (typeof user === 'string' || user instanceof String) {
             // @ts-ignore
             user = JSON.parse(user);
         }
 
-        const userData: AppUser = {
-            nickName: user.email.split('@')[0], userSettings: undefined,
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            emailVerified: user.emailVerified
-        };
-        localStorage.setItem('user', JSON.stringify(userData));
+        // const userData: AppUser = this.createOrGetAppUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
         return user;
     }
 }
