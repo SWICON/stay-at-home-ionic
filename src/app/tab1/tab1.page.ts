@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Platform, ToastController} from '@ionic/angular';
-import {AuthenticationService} from '../shared/authentication-service';
 import {AppUser} from '../shared/appUser';
+import {AuthenticationService} from '../shared/authentication-service';
 import {UserSettings} from '../shared/user-settings.interface';
 import {UserSettingsService} from '../shared/user-settings.service';
 
@@ -56,7 +56,14 @@ export class Tab1Page implements OnInit {
     }
 
     setEditableNick() {
-       this.nickNameEdit = true;
+        this.nickNameEdit = true;
+    }
+
+    saveNick() {
+        // this.nickNameEdit = true;
+        console.log(this.user.nickName);
+        this.auth.saveUser(this.user).then(user => this.user = user);
+        this.nickNameEdit = false;
     }
 
 
