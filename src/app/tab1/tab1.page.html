@@ -27,7 +27,30 @@
         <ion-row *ngIf="user">
             <ion-col>
                 <div class="ion-text-center home-title">
-                    Hello <ion-input [disabled]="!nickNameEdit" [(ngModel)]="user.nickName" (press)="setEditableNick()" (dblclick)="setEditableNick()"></ion-input>
+                    <ion-row>
+                        <ion-col>Hello</ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col>
+                            <div class="container">
+
+                                <ion-label *ngIf="!nickNameEdit">{{user.nickName}}</ion-label>
+                                <ion-input *ngIf="nickNameEdit" [(ngModel)]="user.nickName"
+                                           [disabled]="!nickNameEdit" class="elem nick-input">
+                                </ion-input>
+                                <ion-buttons>
+                                    <ion-button (click)="setEditableNick()" *ngIf="!nickNameEdit"  class="elem pencil" icon-only>
+                                        <ion-icon name="pencil-outline"></ion-icon>
+
+                                    </ion-button>
+                                    <ion-button (click)="saveNick()" *ngIf="nickNameEdit"  class="elem save" icon-only>
+                                        <ion-icon name="save-outline"></ion-icon>
+                                    </ion-button>
+                                </ion-buttons>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+
 
                 </div>
             </ion-col>
