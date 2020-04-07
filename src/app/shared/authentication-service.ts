@@ -128,13 +128,24 @@ export class AuthenticationService {
             this.ngZone.run(() => {
                 this.router.navigate(['/tabs/settings']);
             });
-        }
-        else {
+        } else {
             this.ngZone.run(() => {
                 this.router.navigate(['/tabs']);
             });
         }
         this.setLocalUserData(result.user);
+    }
+
+    private createAppUser(user: User): AppUser {
+      return {
+            nickName: user.email.split('@')[0],
+            userSettings: undefined,
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            emailVerified: user.emailVerified
+        };
     }
 
     // Store user in localStorage
@@ -152,6 +163,14 @@ export class AuthenticationService {
         return userRef.set(userData, {
             merge: true
         });
+    }
+
+    public saveUser(user: AppUser): Promise<AppUser> {
+       // this.setLocalUserData(user);
+        // todo
+        // return this.setUserData(user);
+        localStorage.setItem('user', JSON.stringify(user));
+        return Promise.resolve(user);
     }
 
     private setLocalUserData(user: User): User {

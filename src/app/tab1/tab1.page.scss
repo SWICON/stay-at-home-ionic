@@ -8,19 +8,41 @@ ion-content ion-toolbar {
   height: 100%;
 }
 
-.home-title{
+.home-title {
   font-size: x-large;
 }
-.home-h2{
+
+.home-h2 {
   font-size: larger;
 }
-.img{
+
+.img {
   height: 70vh;
   width: auto;
   margin: auto;
   display: block;
 }
 
-.text-input[enabled] {
-  opacity: 1;
+.nick-input {
+  margin-right: 3px;
+}
+
+.container {
+  display: inline-flex;
+}
+
+.elem {
+  float: left;
+}
+
+.pencil {
+  font-size: small;
+  padding-left: 0px;
+  padding-bottom: 20px;
+}
+
+.save {
+  font-size: small;
+  padding-left: 0px;
+  padding-bottom: 5px;
 }
