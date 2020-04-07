@@ -1,99 +1,101 @@
-import { Component } from '@angular/core';
-import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
-import { Platform } from '@ionic/angular';
+import {Component} from '@angular/core';
+import {Geolocation, Geoposition} from '@ionic-native/geolocation/ngx';
+import {Platform} from '@ionic/angular';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
-import { UserSettings } from '../shared/user-settings.interface';
-import { AuthenticationService } from '../shared/authentication-service';
-import { UserSettingsService } from '../shared/user-settings.service';
-import { environment } from '../../environments/environment';
+import geohash from 'ngeohash';
+import {environment} from '../../environments/environment';
+import {AppUser} from '../shared/appUser';
+import {AuthenticationService} from '../shared/authentication-service';
 
 const ACCESS_TOKEN = environment.leaflet.accessToken;
 
 @Component({
-  selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss']
+    selector: 'app-tab3',
+    templateUrl: 'tab3.page.html',
+    styleUrls: ['tab3.page.scss']
 })
 export class Tab3Page {
 
-  private _isHomeRecorded: boolean = false;
-  isDarkMode: boolean;
-  map: L.Map;
-  center: L.PointTuple;
-  userSettings: UserSettings;
+    isDarkMode: boolean;
+    map: L.Map;
+    center: L.PointTuple;
+    appUser: AppUser;
 
-  get isHomeRecorded(): boolean {
-    return this._isHomeRecorded;
-  }
+    constructor(private platform: Platform,
+                private geolocation: Geolocation,
+                private authenticationService: AuthenticationService) {
 
-  get isolationStartedAt(): string {
-    return this.userSettings ? this.userSettings.isolationStartedAt : null;
-  }
+        this.platform.ready().then(async () => {
 
-  set isolationStartedAt(value: string) {
-    this.userSettings.isolationStartedAt = value;
-    this.updateUserSettings();
-  }
-
-  constructor(private platform: Platform,
-    private geolocation: Geolocation,
-    private authenticationService: AuthenticationService,
-    private userSettingsService: UserSettingsService) {
-
-    this.platform.ready().then(async () => {
-
-      try {
-        this.userSettings = await this.userSettingsService.getUserSettings(this.authenticationService.userData);
-        this._isHomeRecorded = !!(this.userSettings.homePosition.latitude && this.userSettings.homePosition.longitude);
-        const position: Geoposition = await this.geolocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 30000
+            try {
+                this.appUser = await this.authenticationService.getUser();
+                this._isHomeRecorded = !!(this.appUser.latitude && this.appUser.longitude);
+                const position: Geoposition = await this.geolocation.getCurrentPosition({
+                    enableHighAccuracy: true,
+                    timeout: 30000
+                });
+                this.center = [position.coords.latitude, position.coords.longitude];
+                this.setMap();
+            } catch (err) {
+                console.log('Error UserSettings initialization', err);
+            }
         });
-        this.center = [position.coords.latitude, position.coords.longitude];
-        this.setMap();
-      } catch (err) {
-        console.log('Error UserSettings initialization', err);
-      }
-    });
 
-    this.isDarkMode = JSON.parse(localStorage.getItem('isDarkMode') || 'false');
-  }
-
-  onHomeRecordedChanged(event) {
-    if (event.detail.checked) {
-      this.userSettings.homePosition.latitude = this.center[0];
-      this.userSettings.homePosition.longitude = this.center[1];
-    } else {
-      this.userSettings.homePosition.latitude = null;
-      this.userSettings.homePosition.longitude = null;
+        //  this.isDarkMode = JSON.parse(localStorage.getItem('isDarkMode') || 'false');
     }
-    this.updateUserSettings();
-  }
 
-  toggleDarkTheme() {
-    localStorage.setItem('isDarkMode', JSON.stringify(this.isDarkMode));
-    document.body.classList.toggle('dark', this.isDarkMode);
-  }
+    private _isHomeRecorded = false;
 
-  signOut() {
-    this.authenticationService.signOut();
-  }
+    get isHomeRecorded(): boolean {
+        return this._isHomeRecorded;
+    }
 
-  private setMap() {
-    setTimeout(() => {
-      this.map = L.map('map').setView(this.center, 16);
-      L.tileLayer(`https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`, {
-        maxZoom: 18,
-        id: 'mapbox/streets-v11',
-        tileSize: 256,
-        accessToken: ACCESS_TOKEN
-      }).addTo(this.map);
-      L.marker(this.center).addTo(this.map);
-    }, 400);
-  }
+    get isolationStartedAt(): string {
+        return this.appUser ? this.appUser.isolationStartedAt : null;
+    }
 
-  private updateUserSettings() {
-    this.userSettingsService.updateUserSettings(this.userSettings);
-  }
+    set isolationStartedAt(value: string) {
+        this.appUser.isolationStartedAt = value;
+        this.updateUserSettings();
+    }
+
+    onHomeRecordedChanged(event) {
+        if (event.detail.checked) {
+            this.appUser.latitude = this.center[0];
+            this.appUser.longitude = this.center[1];
+            this.appUser.geohash = geohash.encode(this.appUser.latitude, this.appUser.longitude);
+        } else {
+            this.appUser.latitude = null;
+            this.appUser.longitude = null;
+            this.appUser.geohash = null;
+        }
+        this.updateUserSettings();
+    }
+
+    toggleDarkTheme() {
+        this.updateUserSettings();
+        document.body.classList.toggle('dark', this.appUser.isDarkMode);
+    }
+
+    signOut() {
+        this.authenticationService.signOut();
+    }
+
+    private setMap() {
+        setTimeout(() => {
+            this.map = L.map('map').setView(this.center, 16);
+            L.tileLayer(`https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${ACCESS_TOKEN}`, {
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 256,
+                accessToken: ACCESS_TOKEN
+            }).addTo(this.map);
+            L.marker(this.center).addTo(this.map);
+        }, 400);
+    }
+
+    private updateUserSettings() {
+        this.authenticationService.saveUser(this.appUser);
+    }
 }
