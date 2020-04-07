@@ -31,4 +31,4 @@ npm-debug.log*
 /www
 /src/environments
 /.env
-.env.zip
+config.xml
