@@ -108,12 +108,12 @@
     <plugin name="@mauron85/cordova-plugin-background-geolocation" spec="^3.1.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.2.0" />
     <plugin name="cordova-plugin-googleplus" spec="~8.4.0">
-        <variable name="REVERSED_CLIENT_ID" value="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+        <variable name="REVERSED_CLIENT_ID" value="${FIREBASE_REVERSED_ID}" />
         <variable name="PLAY_SERVICES_VERSION" value="15.0.1" />
     </plugin>
     <plugin name="cordova-plugin-facebook4" spec="^6.4.0">
-        <variable name="APP_ID" value="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
-        <variable name="APP_NAME" value="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+        <variable name="APP_ID" value="${FACEBOOK_APP_ID}" />
+        <variable name="APP_NAME" value="${FACEBOOK_APP_NAME}" />
         <variable name="FACEBOOK_HYBRID_APP_EVENTS" value="false" />
         <variable name="FACEBOOK_ANDROID_SDK_VERSION" value="5.13.0" />
     </plugin>
