@@ -33,3 +33,4 @@ npm-debug.log*
 /.env
 config.xml
 package-lock.json
+google-services.json
