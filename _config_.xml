@@ -3,7 +3,7 @@
     <name>Stay@Home</name>
     <description>#stayAtHome</description>
     <author email="sd@swicon.hu" href="http://swision.hu">Swision Hungary Ltd.</author>
-    <content original-src="index.html" src="http://localhost:8100" />
+    <content original-src="index.html" src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -11,6 +11,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <allow-navigation href="http://localhost:8100" />
     <preference name="ScrollEnabled" value="false" />
     <preference name="android-minSdkVersion" value="19" />
     <preference name="BackupWebStorage" value="none" />
@@ -130,6 +131,5 @@
         <variable name="APP_NAME" value="${FACEBOOK_APP_NAME}" />
         <variable name="FACEBOOK_HYBRID_APP_EVENTS" value="false" />
         <variable name="FACEBOOK_ANDROID_SDK_VERSION" value="5.13.0" />
-    </plugin>
-    <allow-navigation href="http://localhost:8100" sessionid="487d7c54" />
+    </plugin>    
 </widget>
