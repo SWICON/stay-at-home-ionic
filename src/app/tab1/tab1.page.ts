@@ -2,8 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {Platform, ToastController} from '@ionic/angular';
 import {AppUser} from '../shared/appUser';
 import {AuthenticationService} from '../shared/authentication-service';
-import {UserSettings} from '../shared/user-settings.interface';
-import {UserSettingsService} from '../shared/user-settings.service';
 
 const oneDay = 1000 * 60 * 60 * 24;
 
@@ -17,8 +15,6 @@ function daysBetween(one, another) {
     styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page implements OnInit {
-    isUserLoggedIn: any = false;
-    userSettings: UserSettings;
     user: AppUser;
     daysInIsolation: number;
     nickNameEdit = false;
@@ -37,16 +33,13 @@ export class Tab1Page implements OnInit {
 
     constructor(private platform: Platform,
                 private toaster: ToastController,
-                private userService: UserSettingsService,
                 private auth: AuthenticationService) {
 
         this.platform.ready().then(async () => {
-            this.user = await this.auth.getUser();
-            this.userSettings = await this.userService.getUserSettings(this.user)
-                .then((res: UserSettings) => {
-                    this.daysInIsolation = daysBetween(new Date(res.isolationStartedAt), new Date());
-                    return res;
-                });
+            this.user = await this.auth.getUser().then(user => {
+                this.daysInIsolation = daysBetween(new Date(user.isolationStartedAt), new Date());
+                return user;
+            });
         });
 
     }
@@ -59,10 +52,10 @@ export class Tab1Page implements OnInit {
         this.nickNameEdit = true;
     }
 
-    saveNick() {
+    async saveNick() {
         // this.nickNameEdit = true;
         console.log(this.user.nickName);
-        this.auth.saveUser(this.user).then(user => this.user = user);
+        this.user = await this.auth.saveUser(this.user);
         this.nickNameEdit = false;
     }
 

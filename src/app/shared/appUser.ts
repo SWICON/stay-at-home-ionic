@@ -1,11 +1,12 @@
-import {UserSettings} from './user-settings.interface';
-
 export interface AppUser {
     uid: string;
     email: string;
-    displayName: string;
     nickName: string;
-    photoURL: string;
-    emailVerified: boolean;
-    userSettings: UserSettings;
+    isolationStartedAt: string;
+    isDarkMode: boolean;
+    isfirstLogin: boolean;
+    latitude: number;
+    longitude: number;
+    geohash?: string;
+    locale: any;
 }

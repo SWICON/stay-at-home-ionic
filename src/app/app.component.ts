@@ -1,18 +1,17 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {
     BackgroundGeolocation,
     BackgroundGeolocationConfig,
     BackgroundGeolocationEvents,
     BackgroundGeolocationResponse
 } from '@ionic-native/background-geolocation/ngx';
-import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { Platform } from '@ionic/angular';
+import {LocationAccuracy} from '@ionic-native/location-accuracy/ngx';
+import {SplashScreen} from '@ionic-native/splash-screen/ngx';
+import {StatusBar} from '@ionic-native/status-bar/ngx';
+import {Platform} from '@ionic/angular';
 import * as moment from 'moment';
-import geohash from 'ngeohash';
-import { LocationService } from './shared/location.service';
-import { UserSettingsService } from './shared/user-settings.service';
+import {LocationService} from './shared/location.service';
+import {UserSettingsService} from './shared/user-settings.service';
 
 const backgroundGeolocationConfig: BackgroundGeolocationConfig = {
     desiredAccuracy: 10,
@@ -39,9 +38,6 @@ export class AppComponent {
 
         // Use matchMedia to check the user preference
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-        if (JSON.parse(localStorage.getItem('isDarkMode') || 'false')) {
-            document.body.classList.toggle('dark', true);
-        }
         // Listen for changes to the prefers-color-scheme media query
         prefersDark.addListener((mediaQuery) => document.body.classList.toggle('dark', mediaQuery.matches));
 
@@ -59,7 +55,7 @@ export class AppComponent {
                     .then(() => {
                         this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
                             .subscribe(async (location: BackgroundGeolocationResponse) => {
-                                const { homePosition } = await this.userSettingsService.getUserSettings(null);
+                                const {homePosition} = await this.userSettingsService.getUserSettings(null);
 
                                 if (!!(homePosition.latitude && homePosition.longitude)) {
                                     const now = moment(location.time).format('MM.dd. HH:mm');
