@@ -16,7 +16,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";
@@ -24,3 +24,36 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+:root {
+    --ion-color-facebook: #3b5998;
+    --ion-color-facebook-rgb: 59, 89, 152;
+    --ion-color-facebook-contrast: #ffffff;
+    --ion-color-facebook-contrast-rgb: 255, 255, 255;
+    --ion-color-facebook-shade: #344e86;
+    --ion-color-facebook-tint: #4f6aa2;
+    --ion-color-google: #db4437;
+    --ion-color-google-rgb: 219, 68, 55;
+    --ion-color-google-contrast: #ffffff;
+    --ion-color-google-contrast-rgb: 255, 255, 255;
+    --ion-color-google-shade: #c13c30;
+    --ion-color-google-tint: #df574b;
+}
+
+.ion-color-facebook {
+    --ion-color-base: var(--ion-color-facebook);
+    --ion-color-base-rgb: var(--ion-color-facebook-rgb);
+    --ion-color-contrast: var(--ion-color-facebook-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-facebook-contrast-rgb);
+    --ion-color-shade: var(--ion-color-facebook-shade);
+    --ion-color-tint: var(--ion-color-facebook-tint);
+}
+
+.ion-color-google {
+    --ion-color-base: var(--ion-color-google);
+    --ion-color-base-rgb: var(--ion-color-google-rgb);
+    --ion-color-contrast: var(--ion-color-google-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-google-contrast-rgb);
+    --ion-color-shade: var(--ion-color-google-shade);
+    --ion-color-tint: var(--ion-color-google-tint);
+}
