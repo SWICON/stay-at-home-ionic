@@ -1,38 +1,14 @@
-<ion-header [translucent]="true" class="ion-padding" *ngIf="!isLoggedIn">
-    <ion-toolbar>
-        <ion-title class="title-large ion-text-center">
-            Stay@Home App
-        </ion-title>
-    </ion-toolbar>
-</ion-header>
-<ion-content class="ion-padding ion-margin login-c" *ngIf="!isLoggedIn">
-    <ion-grid class="ion-align-items-center">
-        <ion-row class="ion-align-items-center">
+<ion-content class="ion-padding ion-margin" *ngIf="!isLoggedIn">
+    <ion-grid class="flex-grid">
+        <ion-row class="flex-row"></ion-row>
+        <ion-row class="flex-row ion-align-items-center">
             <ion-col>
-                <ion-title size="large">
-                    <ion-icon name="home"></ion-icon>
-                    Login to Stay@Home App
-                </ion-title>
-            </ion-col>
-        </ion-row>
-        <ion-row class="ion-align-items-center">
-            <ion-col>
-                <ion-button
-                        type="submit"
-                        color="danger"
-                        (click)="logInGoogle()"
-                        expand="block">
+                <ion-button type="submit" (click)="logInGoogle()" expand="full" color="google" class="ion-margin-bottom">
+                    <ion-icon name="logo-google" slot="start"></ion-icon>
                     Login with Google
                 </ion-button>
-            </ion-col>
-        </ion-row>
-        <ion-row class="ion-align-items-center">
-            <ion-col>
-                <ion-button
-                        type="submit"
-                        color="primary"
-                        (click)="logInFacebook()"
-                        expand="block">
+                <ion-button type="submit" (click)="logInFacebook()" expand="full" color="facebook">
+                    <ion-icon name="logo-facebook" slot="start"></ion-icon>
                     Login with Facebook
                 </ion-button>
             </ion-col>
