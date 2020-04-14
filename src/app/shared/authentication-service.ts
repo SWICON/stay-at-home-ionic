@@ -7,6 +7,7 @@ import {GooglePlus} from '@ionic-native/google-plus/ngx';
 import {Platform} from '@ionic/angular';
 import {auth, User} from 'firebase';
 import {AppUser} from './appUser';
+import {UserPoint} from './user-point';
 import FacebookAuthProvider = auth.FacebookAuthProvider;
 import GoogleAuthProvider = auth.GoogleAuthProvider;
 import UserCredential = auth.UserCredential;
@@ -129,6 +130,12 @@ export class AuthenticationService {
         return Promise.resolve(user);
     }
 
+    public async getUserPoints(): Promise<UserPoint> {
+        const user = await this.getUser();
+        const points = await this.getPointFromServer(user.uid);
+        return Promise.resolve(points);
+    }
+
     private async updateUserData(result: UserCredential, pendingCredential) {
         if (pendingCredential) {
             result = await result.user.linkWithCredential(pendingCredential);
@@ -200,4 +207,29 @@ export class AuthenticationService {
         localStorage.setItem('user', JSON.stringify(user));
         return user;
     }
+
+    private async getPointFromServer(uid: string): Promise<UserPoint> {
+        return this.afStore.collection(`points`)
+            .doc(uid).get().toPromise().then(doc => {
+                let points;
+                if (!doc.exists) {
+                    console.log('No such document!');
+                    points = ({
+                        uid,
+                        collected: 0,
+                        reward: 0,
+                        penalty: 0,
+                    });
+                    this.afStore.collection('points').doc(uid).set(points);
+                } else {
+                    console.log('Document data:', doc.data());
+
+                    points = doc.data();
+                }
+                return Promise.resolve(points);
+            }).catch(err => {
+                console.log('Error getting document', err);
+            });
+    }
+
 }

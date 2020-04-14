@@ -28,7 +28,7 @@
             </ion-col>
         </ion-row>
 
-        <ion-list>
+        <ion-list *ngIf="points">
             <ion-list-header><span style="margin-right: 5px">{{daysInIsolation| number }} days in self-isolation</span>
                 <ion-icon name="sad-outline"></ion-icon>
             </ion-list-header>
@@ -48,7 +48,7 @@
         </ion-list>
 
 
-        <ion-list>
+        <ion-list *ngIf="localArea">
             <ion-list-header>Home residents in the area</ion-list-header>
             <ion-item>
                 <ion-badge slot="start">{{localArea.km10 || 0 | number}}</ion-badge>
