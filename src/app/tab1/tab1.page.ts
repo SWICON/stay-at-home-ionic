@@ -1,7 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Platform, ToastController} from '@ionic/angular';
 import {AppUser} from '../shared/appUser';
+import {AreaInfo} from '../shared/area-info';
 import {AuthenticationService} from '../shared/authentication-service';
+import {LocationService} from '../shared/location.service';
+import {UserPoint} from '../shared/user-point';
 
 const oneDay = 1000 * 60 * 60 * 24;
 
@@ -18,34 +21,30 @@ export class Tab1Page implements OnInit {
     user: AppUser;
     daysInIsolation: number;
     nickNameEdit = false;
+    points: UserPoint;
 
-    points = {
-        collected: 15,
-        reward: 18,
-        penalty: 3
-    };
-
-    localArea: any = {
-        km10: 1534,
-        km20: 23023,
-        km100: 523420
-    };
+    localArea: AreaInfo;
 
     constructor(private platform: Platform,
                 private toaster: ToastController,
+                private location: LocationService,
                 private auth: AuthenticationService) {
-
-        this.platform.ready().then(async () => {
-            this.user = await this.auth.getUser().then(user => {
-                this.daysInIsolation = daysBetween(new Date(user.isolationStartedAt), new Date());
-                return user;
-            });
-        });
 
     }
 
 
     ngOnInit(): void {
+        this.platform.ready().then(async () => {
+            this.user = await this.auth.getUser().then(user => {
+                this.daysInIsolation = daysBetween(new Date(user.isolationStartedAt), new Date());
+                this.localArea = this.location.calcAreaInfo({longitude: user.longitude, latitude: user.latitude, geohash: user.geohash});
+
+                return user;
+            });
+        });
+
+        this.auth.getUserPoints().then(res => this.points = res);
+
     }
 
     setEditableNick() {
