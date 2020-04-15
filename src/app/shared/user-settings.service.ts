@@ -1,13 +1,15 @@
 import {Injectable} from '@angular/core';
 import * as moment from 'moment';
 
-import {AppUser} from './appUser';
+import {AppUser} from './app-user';
 import {UserSettings} from './user-settings.interface';
 
 @Injectable({
     providedIn: 'root'
 })
-
+/**
+ * @deprecated
+ */
 export class UserSettingsService {
 
     userSettings: UserSettings;

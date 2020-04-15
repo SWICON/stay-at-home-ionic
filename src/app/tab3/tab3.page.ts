@@ -4,8 +4,9 @@ import { Platform } from '@ionic/angular';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 import geohash from 'ngeohash';
+
 import { environment } from '../../environments/environment';
-import { AppUser } from '../shared/appUser';
+import { AppUser } from '../shared/app-user';
 import { AuthenticationService } from '../shared/authentication-service';
 import { SwipeService } from '../shared/swipe.service';
 

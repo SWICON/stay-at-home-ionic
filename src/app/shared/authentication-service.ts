@@ -6,7 +6,7 @@ import {Facebook, FacebookLoginResponse} from '@ionic-native/facebook/ngx';
 import {GooglePlus} from '@ionic-native/google-plus/ngx';
 import {Platform} from '@ionic/angular';
 import {auth, User} from 'firebase';
-import {AppUser} from './appUser';
+import {AppUser} from './app-user';
 import {UserPoint} from './user-point';
 import FacebookAuthProvider = auth.FacebookAuthProvider;
 import GoogleAuthProvider = auth.GoogleAuthProvider;

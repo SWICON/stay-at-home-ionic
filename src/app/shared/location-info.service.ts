@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore} from '@angular/fire/firestore';
 import geohash from 'ngeohash';
-import {AppUser} from './appUser';
+import {AppUser} from './app-user';
 import {AreaInfo} from './area-info';
 import {Position} from './position';
 
@@ -42,29 +42,30 @@ export class LocationInfoService {
         const range20 = getGeohashRange(position.latitude, position.latitude, 20);
         const range100 = getGeohashRange(position.latitude, position.latitude, 100);
 
-        let km10 = 0;
-        let km20 = 0;
-        const km100 = 0;
-        this.afStore.collection<AppUser>('users', ref => {
-                return ref
-                    .where('geohash', '>=', range10.lower)
-                    .where('geohash', '<=', range10.upper);
-            })
-            .valueChanges()
-            .subscribe((result) => {
-                km10 = result.length;    // return the count
-            });
-
-        this.afStore
-            .collection<AppUser>('users', ref => {
-                return ref
-                    .where('geohash', '>=', range20.lower)
-                    .where('geohash', '<=', range20.upper);
-            })
-            .valueChanges()
-            .subscribe((result) => {
-                km20 = result.length;    // return the count
-            });
+        const km10 = 63;
+        const km20 = 601;
+        const km100 = 12312;
+        // this.afStore.collection<AppUser>('users', ref => {
+        //     return ref
+        //         .where('geohash', '>=', range10.lower)
+        //         .where('geohash', '<=', range10.upper);
+        // }).get()
+        //     .toPromise()
+        //     .then((result) => {
+        //         km10 = result.docs.length;    // return the count
+        //     });
+        //
+        // this.afStore
+        //     .collection<AppUser>('users', ref => {
+        //         return ref
+        //             .where('geohash', '>=', range20.lower)
+        //             .where('geohash', '<=', range20.upper);
+        //     })
+        //     .get()
+        //     .toPromise()
+        //     .then((result) => {
+        //         km20 = result.docs.length;    // return the count
+        //     });
 
         return {km10, km20, km100};
     }
