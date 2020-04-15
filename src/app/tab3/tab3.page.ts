@@ -5,7 +5,7 @@ import L from 'leaflet';
 import 'leaflet-routing-machine';
 import geohash from 'ngeohash';
 import {environment} from '../../environments/environment';
-import {AppUser} from '../shared/appUser';
+import {AppUser} from '../shared/app-user';
 import {AuthenticationService} from '../shared/authentication-service';
 
 const ACCESS_TOKEN = environment.leaflet.accessToken;
