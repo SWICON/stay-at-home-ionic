@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Platform, ToastController} from '@ionic/angular';
-import {AppUser} from '../shared/appUser';
+import {AppUser} from '../shared/app-user';
 import {AreaInfo} from '../shared/area-info';
 import {AuthenticationService} from '../shared/authentication-service';
 import {LocationInfoService} from '../shared/location-info.service';
