@@ -28,22 +28,22 @@
             </ion-col>
         </ion-row>
 
-        <ion-list *ngIf="points">
+        <ion-list *ngIf="user">
             <ion-list-header><span style="margin-right: 5px">{{daysInIsolation| number }} days in self-isolation</span>
                 <ion-icon name="sad-outline"></ion-icon>
             </ion-list-header>
 
             <ion-item>
                 <ion-label>Collected points:</ion-label>
-                <ion-badge slot="end">{{points.collected || 0 | number}}</ion-badge>
+                <ion-badge slot="end">{{user.rewardPoints - (user.penaltyPoints || 0) || 0 | number}}</ion-badge>
             </ion-item>
             <ion-item>
                 <ion-label>Reward points:</ion-label>
-                <ion-badge slot="end">{{points.reward || 0 | number}}</ion-badge>
+                <ion-badge slot="end" color="success">{{user.rewardPoints || 0 | number}}</ion-badge>
             </ion-item>
             <ion-item>
                 <ion-label>Penalty points:</ion-label>
-                <ion-badge slot="end">{{points.penalty || 0 | number}}</ion-badge>
+                <ion-badge slot="end" color="danger">{{user.penaltyPoints || 0 | number}}</ion-badge>
             </ion-item>
         </ion-list>
 

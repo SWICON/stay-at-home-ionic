@@ -80,14 +80,19 @@ export class AppComponent {
                     if (!status.isRunning) {
                         this.backgroundGeolocation.start();
                     }
-                });
-
+                });                
                 this.locationAccuracy.canRequest().then((canRequest: boolean) => {
                     if (canRequest) {
                         // the accuracy option will be ignored by iOS
                         this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
-                            () => console.log('Request successful'),
-                            error => console.log('Error requesting location permissions', error)
+                            () => {
+                                console.log('[INFO] BackgroundGeolocation started.');
+                                this.backgroundGeolocation.start();
+                            },
+                            error => {
+                                console.log('[INFO] BackgroundGeolocation stopped.');
+                                this.backgroundGeolocation.stop();
+                            }
                         );
                     }
                 });
