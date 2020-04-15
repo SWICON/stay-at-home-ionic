@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SwipeService } from '../shared/swipe.service';
 
 @Component({
   selector: 'app-tab2',
@@ -7,9 +8,17 @@ import { Component } from '@angular/core';
 })
 export class Tab2Page {
 
-  constructor() {}
+  constructor(private swipe: SwipeService) { }
 
   ngOnInit() {
-    
+
+  }
+
+  onSwipe(event) {
+    if (event.deltaX > 0) {
+      this.swipe.toRight('tabs/home');
+    } else {
+      this.swipe.toLeft('tabs/settings');
+    }
   }
 }

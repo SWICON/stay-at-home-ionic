@@ -1,12 +1,13 @@
-import {Component} from '@angular/core';
-import {Geolocation, Geoposition} from '@ionic-native/geolocation/ngx';
-import {Platform} from '@ionic/angular';
+import { Component } from '@angular/core';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
+import { Platform } from '@ionic/angular';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 import geohash from 'ngeohash';
-import {environment} from '../../environments/environment';
-import {AppUser} from '../shared/appUser';
-import {AuthenticationService} from '../shared/authentication-service';
+import { environment } from '../../environments/environment';
+import { AppUser } from '../shared/appUser';
+import { AuthenticationService } from '../shared/authentication-service';
+import { SwipeService } from '../shared/swipe.service';
 
 const ACCESS_TOKEN = environment.leaflet.accessToken;
 
@@ -23,8 +24,9 @@ export class Tab3Page {
     appUser: AppUser;
 
     constructor(private platform: Platform,
-                private geolocation: Geolocation,
-                private authenticationService: AuthenticationService) {
+        private swipe: SwipeService,
+        private geolocation: Geolocation,
+        private authenticationService: AuthenticationService) {
 
         this.platform.ready().then(async () => {
 
@@ -80,6 +82,14 @@ export class Tab3Page {
 
     signOut() {
         this.authenticationService.signOut();
+    }
+
+    onSwipe(event) {
+        if (event.deltaX > 0) {
+            this.swipe.toRight('tabs/rank');
+        } else {
+            // nothing
+        }
     }
 
     private setMap() {
