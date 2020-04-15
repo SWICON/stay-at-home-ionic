@@ -3,6 +3,7 @@ import {Platform, ToastController} from '@ionic/angular';
 import {AppUser} from '../shared/appUser';
 import {AreaInfo} from '../shared/area-info';
 import {AuthenticationService} from '../shared/authentication-service';
+import {LocationInfoService} from '../shared/location-info.service';
 import {LocationService} from '../shared/location.service';
 import {UserPoint} from '../shared/user-point';
 
@@ -27,7 +28,7 @@ export class Tab1Page implements OnInit {
 
     constructor(private platform: Platform,
                 private toaster: ToastController,
-                private location: LocationService,
+                private location: LocationInfoService,
                 private auth: AuthenticationService) {
 
     }
@@ -37,8 +38,7 @@ export class Tab1Page implements OnInit {
         this.platform.ready().then(async () => {
             this.user = await this.auth.getUser().then(user => {
                 this.daysInIsolation = daysBetween(new Date(user.isolationStartedAt), new Date());
-                this.localArea = this.location.calcAreaInfo({longitude: user.longitude, latitude: user.latitude, geohash: user.geohash});
-
+                this.localArea = this.location.getAreaInfo({longitude: user.longitude, latitude: user.latitude, geohash: user.geohash});
                 return user;
             });
         });

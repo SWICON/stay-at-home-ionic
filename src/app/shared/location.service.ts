@@ -54,8 +54,4 @@ export class LocationService {
         const d = R * c; // Distance in km
         return d;
     }
-
-    calcAreaInfo(coord1: Position): AreaInfo {
-        return {km10: 1534, km100: 523420, km20: 23023};
-    }
 }
