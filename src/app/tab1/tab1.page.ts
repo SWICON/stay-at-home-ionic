@@ -4,7 +4,6 @@ import {AppUser} from '../shared/appUser';
 import {AreaInfo} from '../shared/area-info';
 import {AuthenticationService} from '../shared/authentication-service';
 import {LocationInfoService} from '../shared/location-info.service';
-import {LocationService} from '../shared/location.service';
 import {UserPoint} from '../shared/user-point';
 
 const oneDay = 1000 * 60 * 60 * 24;

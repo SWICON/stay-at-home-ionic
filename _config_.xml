@@ -3,7 +3,7 @@
     <name>Stay@Home</name>
     <description>#stayAtHome</description>
     <author email="sd@swicon.hu" href="http://swision.hu">Swision Hungary Ltd.</author>
-    <content original-src="index.html" src="index.html" />
+    <content original-src="index.html" src="localhost:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
