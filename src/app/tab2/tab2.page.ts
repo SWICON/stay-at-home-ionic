@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { LocationService } from '../shared/location.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-tab2',
@@ -9,11 +7,9 @@ import { Observable } from 'rxjs';
 })
 export class Tab2Page {
 
-  entries$: Observable<string[]>;
-
-  constructor(private locationService: LocationService) {}
+  constructor() {}
 
   ngOnInit() {
-    this.entries$ = this.locationService.entries$;
+    
   }
 }

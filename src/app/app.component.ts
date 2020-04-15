@@ -1,24 +1,27 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 import {
     BackgroundGeolocation,
     BackgroundGeolocationConfig,
     BackgroundGeolocationEvents,
-    BackgroundGeolocationResponse
+    BackgroundGeolocationResponse,
+    BackgroundGeolocationLocationProvider,
+    ServiceStatus
 } from '@ionic-native/background-geolocation/ngx';
-import {LocationAccuracy} from '@ionic-native/location-accuracy/ngx';
-import {SplashScreen} from '@ionic-native/splash-screen/ngx';
-import {StatusBar} from '@ionic-native/status-bar/ngx';
-import {Platform} from '@ionic/angular';
-import * as moment from 'moment';
-import {LocationService} from './shared/location.service';
-import {UserSettingsService} from './shared/user-settings.service';
+import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { Platform } from '@ionic/angular';
+import { BackgroundLocationService } from './shared/background-location.service';
 
 const backgroundGeolocationConfig: BackgroundGeolocationConfig = {
-    desiredAccuracy: 10,
-    stationaryRadius: 20,
-    distanceFilter: 30,
-    debug: true,
-    stopOnTerminate: false
+    locationProvider: BackgroundGeolocationLocationProvider.DISTANCE_FILTER_PROVIDER,
+    desiredAccuracy: 0,
+    stationaryRadius: 200, // 200 meters
+    distanceFilter: 200, // 200 meters
+    stopOnTerminate: false,
+    startOnBoot: true,
+    startForeground: false,
+    activitiesInterval: 1 * 60 * 1000 // 5 * 60 * 1000 // in millisec
 };
 
 @Component({
@@ -33,8 +36,7 @@ export class AppComponent {
         private statusBar: StatusBar,
         private locationAccuracy: LocationAccuracy,
         private backgroundGeolocation: BackgroundGeolocation,
-        private userSettingsService: UserSettingsService,
-        private locationService: LocationService) {
+        private backgroundLocationService: BackgroundLocationService) {
 
         // Use matchMedia to check the user preference
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -46,7 +48,6 @@ export class AppComponent {
 
     initializeApp() {
         this.platform.ready().then(() => {
-            console.log('platform is ready');
             this.statusBar.styleDefault();
             this.splashScreen.hide();
 
@@ -55,24 +56,26 @@ export class AppComponent {
                     .then(() => {
                         this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
                             .subscribe(async (location: BackgroundGeolocationResponse) => {
-                                const {homePosition} = await this.userSettingsService.getUserSettings(null);
-
-                                if (!!(homePosition.latitude && homePosition.longitude)) {
-                                    const now = moment(location.time).format('MM.dd. HH:mm');
-                                    const distance = this.locationService.calcDistanceInKm(homePosition, {
-                                        latitude: location.latitude,
-                                        longitude: location.longitude
-                                    });
-
-                                    this.locationService.prepend(`${now} - ${distance}km (${location.latitude};${location.longitude})`);
-                                }
-
+                                await this.backgroundLocationService.onLocation(location);
                                 this.backgroundGeolocation.finish();
                             });
-
+                        this.backgroundGeolocation.on(BackgroundGeolocationEvents.stationary)
+                            .subscribe(async (location: BackgroundGeolocationResponse) => {
+                                await this.backgroundLocationService.onLocation(location);
+                                this.backgroundGeolocation.finish();
+                            });
                     });
 
-                this.backgroundGeolocation.start();
+                this.backgroundGeolocation.checkStatus().then((status: ServiceStatus) => {
+                    console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
+                    console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+                    console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
+
+                    // you don't need to check status before start (this is just the example)
+                    if (!status.isRunning) {
+                        this.backgroundGeolocation.start(); //triggers start on start event
+                    }
+                });
 
                 this.locationAccuracy.canRequest().then((canRequest: boolean) => {
                     if (canRequest) {
