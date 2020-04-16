@@ -11,6 +11,8 @@ export interface AppUser {
     locale: any;
     atHome: number;
     atFar: number;
+    atHomeElapsedMs: number;
+    atFarElapsedMs: number;
     rewardPoints: number;
     penaltyPoints: number;
 }

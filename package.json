@@ -36,6 +36,7 @@
     "com.telerik.plugins.nativepagetransitions": "^0.6.5",
     "cordova-android": "^7.1.4",
     "cordova-browser": "^6.0.0",
+    "cordova-plugin-android-permissions": "^1.0.2",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-facebook4": "^6.4.0",
     "cordova-plugin-geolocation": "^4.0.2",
@@ -120,7 +121,8 @@
         "ACCOUNT_LABEL": "@string/app_name",
         "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
         "CONTENT_AUTHORITY": "$PACKAGE_NAME"
-      }
+      },
+      "cordova-plugin-android-permissions": {}
     },
     "platforms": [
       "android"

@@ -54,13 +54,20 @@ export class AppComponent {
 
         this.hammer = new Hammer(document.body);
         this.hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
-        this.platform.ready().then(() => {
-            this.statusBar.styleDefault();
-            this.splashScreen.hide();
+
+        this.platform.ready().then(async () => {
 
             if (this.platform.is('cordova')) {
-                this.backgroundGeolocation.configure(backgroundGeolocationConfig)
-                    .then(() => {
+                this.statusBar.styleDefault();
+                this.splashScreen.hide();
+
+                const canRequestLocationAccuracy = await this.locationAccuracy.canRequest();
+
+                if (canRequestLocationAccuracy) {
+                    try {
+                        await this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
+                        await this.backgroundGeolocation.configure(backgroundGeolocationConfig);
+
                         this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
                             .subscribe(async (location: BackgroundGeolocationResponse) => {
                                 await this.backgroundLocationService.onLocation(location);
@@ -71,31 +78,19 @@ export class AppComponent {
                                 await this.backgroundLocationService.onLocation(location);
                                 this.backgroundGeolocation.finish();
                             });
-                    });
 
-                this.backgroundGeolocation.checkStatus().then((status: ServiceStatus) => {
-                    console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
-                    console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
-                    console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-                    if (!status.isRunning) {
-                        this.backgroundGeolocation.start();
+                        const bgLocStatus: ServiceStatus = await this.backgroundGeolocation.checkStatus();
+                        console.log('[INFO] BackgroundGeolocation service is running', bgLocStatus.isRunning);
+                        console.log('[INFO] BackgroundGeolocation services enabled', bgLocStatus.locationServicesEnabled);
+                        console.log('[INFO] BackgroundGeolocation auth status: ' + bgLocStatus.authorization);
+                        if (!bgLocStatus.isRunning) {
+                            this.backgroundGeolocation.start();
+                        }
+                    } catch (err) {
+                        console.error('[ERROR] BackgroundGeolocation stopped.');
+                        this.backgroundGeolocation.stop();
                     }
-                });                
-                this.locationAccuracy.canRequest().then((canRequest: boolean) => {
-                    if (canRequest) {
-                        // the accuracy option will be ignored by iOS
-                        this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
-                            () => {
-                                console.log('[INFO] BackgroundGeolocation started.');
-                                this.backgroundGeolocation.start();
-                            },
-                            error => {
-                                console.log('[INFO] BackgroundGeolocation stopped.');
-                                this.backgroundGeolocation.stop();
-                            }
-                        );
-                    }
-                });
+                }
             }
         });
     }

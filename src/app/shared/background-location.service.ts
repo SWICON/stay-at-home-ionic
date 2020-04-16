@@ -3,6 +3,7 @@ import { BackgroundGeolocationResponse } from '@ionic-native/background-geolocat
 import * as moment from 'moment';
 import { Position } from './position';
 import { AuthenticationService } from './authentication-service';
+import { app } from 'firebase';
 
 export const deg2Rad = (deg) => deg * (Math.PI / 180);
 
@@ -28,19 +29,39 @@ export class BackgroundLocationService {
                 longitude: location.longitude
             });
 
+            if (!appUser.rewardPoints) {
+                appUser.rewardPoints = 1;
+            }
+
+            if (!appUser.penaltyPoints) {
+                appUser.penaltyPoints = 0;
+            }
+
+            if (!appUser.atFar) {
+                appUser.atFar = location.time;
+            }
+
+            if (!appUser.atHome) {
+                appUser.atHome = location.time;
+            }
+
             console.log(`[INFO] ${now} | distance: ${distance}km`);
             if (distance > 0.2) {
                 console.log('[INFO] You are far away.');
-                const penaltyPoints = appUser.penaltyPoints + (location.time - appUser.atFar) / 1000000;
-                console.log('[INFO] Penalty points:', penaltyPoints);
+                appUser.atFarElapsedMs = appUser.atFarElapsedMs = moment(location.time).diff(appUser.atFar) / (60 * 1000);
                 appUser.atFar = location.time;
+
+                const penaltyPoints = Math.abs(Math.round(appUser.atFarElapsedMs / 60));
+                console.log('[INFO] Penalty points:', penaltyPoints);
                 appUser.penaltyPoints = penaltyPoints;
                 this.authenticationService.saveUser(appUser);
             } else {
                 console.log('[INFO] You are at home, you are safe.');
-                const rewardPoints = appUser.rewardPoints + (location.time - appUser.atHome) / 10000000;
-                console.log('[INFO] Reward points:', rewardPoints);
+                appUser.atHomeElapsedMs = appUser.atHomeElapsedMs + moment(location.time).diff(appUser.atHome) / (60 * 1000);
                 appUser.atHome = location.time;
+
+                const rewardPoints = Math.abs(Math.round(appUser.atHomeElapsedMs / 60));
+                console.log('[INFO] Reward points:', rewardPoints);
                 appUser.rewardPoints = rewardPoints;
                 this.authenticationService.saveUser(appUser);
             }
