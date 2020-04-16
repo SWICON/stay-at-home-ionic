@@ -89,6 +89,7 @@ export class AppComponent {
                     } catch (err) {
                         console.error('[ERROR] BackgroundGeolocation stopped.');
                         this.backgroundGeolocation.stop();
+
                     }
                 }
             }
