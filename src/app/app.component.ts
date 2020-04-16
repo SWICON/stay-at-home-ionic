@@ -12,6 +12,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Platform } from '@ionic/angular';
 import { BackgroundLocationService } from './shared/background-location.service';
+import * as Hammer from 'hammerjs';
 
 const backgroundGeolocationConfig: BackgroundGeolocationConfig = {
     locationProvider: BackgroundGeolocationLocationProvider.DISTANCE_FILTER_PROVIDER,
@@ -30,6 +31,9 @@ const backgroundGeolocationConfig: BackgroundGeolocationConfig = {
     styleUrls: ['app.component.scss']
 })
 export class AppComponent {
+
+    private hammer: any;
+
     constructor(
         private platform: Platform,
         private splashScreen: SplashScreen,
@@ -47,6 +51,9 @@ export class AppComponent {
     }
 
     initializeApp() {
+
+        this.hammer = new Hammer(document.body);
+        this.hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
         this.platform.ready().then(() => {
             this.statusBar.styleDefault();
             this.splashScreen.hide();
@@ -70,19 +77,22 @@ export class AppComponent {
                     console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
                     console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
                     console.log('[INFO] BackgroundGeolocation auth status: ' + status.authorization);
-
-                    // you don't need to check status before start (this is just the example)
                     if (!status.isRunning) {
-                        this.backgroundGeolocation.start(); //triggers start on start event
+                        this.backgroundGeolocation.start();
                     }
                 });
-
                 this.locationAccuracy.canRequest().then((canRequest: boolean) => {
                     if (canRequest) {
                         // the accuracy option will be ignored by iOS
                         this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
-                            () => console.log('Request successful'),
-                            error => console.log('Error requesting location permissions', error)
+                            () => {
+                                console.log('[INFO] BackgroundGeolocation started.');
+                                this.backgroundGeolocation.start();
+                            },
+                            error => {
+                                console.log('[INFO] BackgroundGeolocation stopped.');
+                                this.backgroundGeolocation.stop();
+                            }
                         );
                     }
                 });

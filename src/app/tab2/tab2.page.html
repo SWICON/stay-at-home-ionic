@@ -6,26 +6,35 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" (swipe)="onSwipe($event)">
     <ion-header collapse="condense">
         <ion-toolbar>
             <ion-title size="large">Ranking</ion-title>
         </ion-toolbar>
     </ion-header>
 
-    <ion-button (click)="toggleInfiniteScroll()" expand="block">
-        Toggle Infinite Scroll
-    </ion-button>
+    <ng-container *ngIf="loaded; else feedLoading;">
+        <ion-card *ngFor="let item of (items$ | async);">
+            <ion-card-header>
+                <ion-card-title>{{item.nickName}}</ion-card-title>
+            </ion-card-header>
 
-    <ion-list></ion-list>
+            <ion-card-content>
+                <p>{{item.isolationStartedAt}}</p>
+            </ion-card-content>
+        </ion-card>
 
-    <ion-infinite-scroll threshold="100px" (ionInfinite)="findNext($event)">
-        <ion-infinite-scroll-content
-                loadingSpinner="bubbles"
-                loadingText="Loading more data...">
-        </ion-infinite-scroll-content>
-    </ion-infinite-scroll>
+        <ion-infinite-scroll (ionInfinite)="findNext($event)">
+            <ion-infinite-scroll-content>
+            </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+    </ng-container>
 
-
+    <ng-template #feedLoading>
+        <main>
+            Initializing data...
+        </main>
+    </ng-template>
+    
 </ion-content>
 

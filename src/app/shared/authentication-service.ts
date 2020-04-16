@@ -1,16 +1,18 @@
-import {Injectable, NgZone} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
-import {Router} from '@angular/router';
-import {Facebook, FacebookLoginResponse} from '@ionic-native/facebook/ngx';
-import {GooglePlus} from '@ionic-native/google-plus/ngx';
-import {Platform} from '@ionic/angular';
-import {auth, User} from 'firebase';
-import {AppUser} from './app-user';
-import {UserPoint} from './user-point';
+import { Injectable, NgZone } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
+import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook/ngx';
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
+import { Platform } from '@ionic/angular';
+import { auth, User } from 'firebase';
+import { AppUser } from './app-user';
+import { UserPoint } from './user-point';
 import FacebookAuthProvider = auth.FacebookAuthProvider;
 import GoogleAuthProvider = auth.GoogleAuthProvider;
 import UserCredential = auth.UserCredential;
+import { Observable } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -57,7 +59,7 @@ export class AuthenticationService {
             let result: UserCredential;
 
             if (this.platform.is('cordova')) {
-                const {accessToken} = await this.googlePlus.login({offline: true});
+                const { accessToken } = await this.googlePlus.login({ offline: true });
                 result = await this.ngFireAuth.auth.signInWithCredential(GoogleAuthProvider.credential(null, accessToken));
             } else {
                 result = await this.ngFireAuth.auth.signInWithPopup(new GoogleAuthProvider());
@@ -111,6 +113,18 @@ export class AuthenticationService {
         return Promise.resolve(user);
     }
 
+    public subscribeUser$(): Observable<AppUser> {
+        return this.ngFireAuth.user.pipe(
+            switchMap((user) => {
+                return this.afStore.collection<AppUser>('users', ref => ref.where('uid', '==', user.uid))
+                    .valueChanges()
+                    .pipe(
+                        map((appUsers) => appUsers[0])
+                    );
+            })
+        );
+    }
+
     // Sign-out
     public signOut() {
         return this.ngFireAuth.auth.signOut().then(() => {
@@ -154,9 +168,8 @@ export class AuthenticationService {
                 this.router.navigate(['/tabs']);
             });
         }
+
         return this.setLocalUserData(appUser);
-
-
     }
 
     private async createOrGetAppUser(user: User): Promise<AppUser> {
@@ -194,7 +207,6 @@ export class AuthenticationService {
         return userRef.set(user, {
             merge: true
         });
-
     }
 
     private setLocalUserData(user: AppUser): AppUser {
@@ -231,5 +243,4 @@ export class AuthenticationService {
                 console.log('Error getting document', err);
             });
     }
-
 }

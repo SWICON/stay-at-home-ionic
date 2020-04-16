@@ -9,4 +9,8 @@ export interface AppUser {
     longitude: number;
     geohash?: string;
     locale: any;
+    atHome: number;
+    atFar: number;
+    rewardPoints: number;
+    penaltyPoints: number;
 }

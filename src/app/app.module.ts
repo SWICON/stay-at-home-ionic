@@ -12,6 +12,7 @@ import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx';
+import { NativePageTransitions } from '@ionic-native/native-page-transitions/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { environment } from '../environments/environment';
 
@@ -41,6 +42,7 @@ import { Facebook } from '@ionic-native/facebook/ngx';
         Geolocation,
         BackgroundGeolocation,
         LocationAccuracy,
+        NativePageTransitions,
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         AuthenticationService,
         AngularFirestoreModule,
