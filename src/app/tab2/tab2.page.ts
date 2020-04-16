@@ -57,5 +57,9 @@ private lastPageReachedSub: Subscription;
         }, 500);
     }
 
+    toggleInfiniteScroll() {
+        this.infiniteScroll.disabled = !this.infiniteScroll.disabled;
+    }
+
 
 }

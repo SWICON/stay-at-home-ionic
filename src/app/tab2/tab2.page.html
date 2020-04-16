@@ -13,28 +13,18 @@
         </ion-toolbar>
     </ion-header>
 
-    <ng-container *ngIf="loaded; else feedLoading;">
-        <ion-card *ngFor="let item of (items$ | async);">
-            <ion-card-header>
-                <ion-card-title>{{item.nickName}}</ion-card-title>
-            </ion-card-header>
+    <ion-button (click)="toggleInfiniteScroll()" expand="block">
+        Toggle Infinite Scroll
+    </ion-button>
 
-            <ion-card-content>
-                <p>{{item.isolationStartedAt}}</p>
-            </ion-card-content>
-        </ion-card>
+    <ion-list></ion-list>
 
-        <ion-infinite-scroll (ionInfinite)="findNext($event)">
-            <ion-infinite-scroll-content>
-            </ion-infinite-scroll-content>
-        </ion-infinite-scroll>
-    </ng-container>
-
-    <ng-template #feedLoading>
-        <main>
-            Initializing data...
-        </main>
-    </ng-template>
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="findNext($event)">
+        <ion-infinite-scroll-content
+                loadingSpinner="bubbles"
+                loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 
 
 </ion-content>
